@@ -82,7 +82,7 @@ dependencies {
     modCompileOnly "maven.modrinth:shoulder-surfing-reloaded:1.21.1-4.14.1+fabric"
     modCompileOnly "curse.maven:BetterThirdPerson-435044:5439141"
 
-    def portingLibModules = ["attributes", "base", "blocks", "brewing", "client_events", "common", "config", "core", "entity", "gui_utils", "item_abilities", "items", "level_events", "loot", "mixin_extensions", "registry"]
+    def portingLibModules = ["attributes", "base", "blocks", "brewing", "client_events", "common", "config", "core", "entity", "gui_utils", "item_abilities", "items", "level_events", "loot", "mixin_extensions", "models", "registry"]
 
     for (def module in portingLibModules) {
         include(modImplementation("io.github.fabricators_of_create.Porting-Lib:${module}:${porting_lib_version}"))
