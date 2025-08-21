@@ -3,14 +3,13 @@ package com.alrex.parcool.common.block;
 import com.alrex.parcool.ParCool;
 import com.alrex.parcool.common.block.zipline.IronZiplineHookBlock;
 import com.alrex.parcool.common.block.zipline.WoodenZiplineHookBlock;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredHolder;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredRegister;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class Blocks {
     private static final DeferredRegister<Block> REGISTER = DeferredRegister.create(Registries.BLOCK, ParCool.MOD_ID);
@@ -34,8 +33,8 @@ public class Blocks {
             )
     );
 
-    public static void registerAll(IEventBus bus) {
-        REGISTER.register(bus);
+    public static void registerAll() {
+        REGISTER.register();
     }
 
 }

@@ -6,9 +6,9 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.BooleanSupplier;
@@ -38,14 +38,14 @@ public abstract class ParCoolSettingScreen extends Screen {
     protected final BooleanSupplier serverPermissionReceived;
 
 	@Override
-    public void resize(@Nonnull Minecraft minecraft, int p_231152_2_, int p_231152_3_) {
+    public void resize(@NotNull Minecraft minecraft, int p_231152_2_, int p_231152_3_) {
         super.resize(minecraft, p_231152_2_, p_231152_3_);
 		mouseScrolled(0, 0, 0);
 	}
 	private static final Component MenuTitle = Component.translatable("parcool.gui.title.setting");
 
 	@Override
-	public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float p_230430_4_) {
+	public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float p_230430_4_) {
 		super.render(graphics, mouseX, mouseY, p_230430_4_);
 		renderBackground(graphics, mouseX, mouseY, p_230430_4_);
 		int topBarHeight = font.lineHeight * 2;
@@ -118,7 +118,7 @@ public abstract class ParCoolSettingScreen extends Screen {
 	}
 
 	@Override
-	public void renderBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+	public void renderBackground(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 		graphics.fill(0, 0, this.width, this.height, color.getBackground());
 	}
 

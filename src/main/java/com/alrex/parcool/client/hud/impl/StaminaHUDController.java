@@ -12,14 +12,11 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
-
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class StaminaHUDController implements LayeredDraw.Layer {
 	public static ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(ParCool.MOD_ID, "hud.stamina");
 	LightStaminaHUD lightStaminaHUD;
@@ -30,15 +27,15 @@ public class StaminaHUDController implements LayeredDraw.Layer {
 		staminaHUD = new StaminaHUD();
 	}
 
-	public void onTick(ClientTickEvent.Post event) {
-		LocalPlayer player = Minecraft.getInstance().player;
+	public void onTick(Minecraft minecraft) {
+		LocalPlayer player = minecraft.player;
 		if (player == null || player.isCreative()) return;
-		lightStaminaHUD.onTick(event, player);
-		staminaHUD.onTick(event, player);
+		lightStaminaHUD.onTick(player);
+		staminaHUD.onTick(player);
 	}
 
 	@Override
-	public void render(@Nonnull GuiGraphics graphics, @Nonnull DeltaTracker partialTick) {
+	public void render(@NotNull GuiGraphics graphics, @NotNull DeltaTracker partialTick) {
 		var player = Minecraft.getInstance().player;
 		if (player == null) return;
 		if (!ParCoolConfig.Client.Booleans.ParCoolIsActive.get()) return;
@@ -46,7 +43,7 @@ public class StaminaHUDController implements LayeredDraw.Layer {
 		Parkourability parkourability = Parkourability.get(player);
 
 		var localStamina = LocalStamina.get(player);
-		var stamina = player.getData(Attachments.STAMINA);
+		var stamina = player.getAttachedOrCreate(Attachments.STAMINA);
 
 		if (ParCoolConfig.Client.Booleans.HideStaminaHUDWhenStaminaIsInfinite.get() &&
 				parkourability.getActionInfo().isStaminaInfinite(localStamina, player)
@@ -54,7 +51,7 @@ public class StaminaHUDController implements LayeredDraw.Layer {
 
 		if (!localStamina.shouldShowHUD(player)) return;
 
-		if (NeoForge.EVENT_BUS.post(new ParCoolHUDEvent.RenderEvent(graphics, partialTick)).isCanceled())
+		if ((new ParCoolHUDEvent.RenderEvent(graphics, partialTick)).post())
 			return;
 
 		switch (ParCoolConfig.Client.getInstance().StaminaHUDType.get()) {

@@ -10,11 +10,11 @@ import com.alrex.parcool.common.attachment.client.Animation;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.common.info.ActionInfo;
 import com.alrex.parcool.config.ParCoolConfig;
+import io.github.fabricators_of_create.porting_lib.attributes.PortingLibAttributes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.common.NeoForgeMod;
 
 import java.nio.ByteBuffer;
 
@@ -80,7 +80,7 @@ public class FastSwim extends Action {
 
     @Override
     public void onServerTick(Player player, Parkourability parkourability) {
-        AttributeInstance attr = player.getAttribute(NeoForgeMod.SWIM_SPEED);
+        AttributeInstance attr = player.getAttribute(PortingLibAttributes.SWIM_SPEED);
         if (attr == null) return;
         if (attr.getModifier(FAST_SWIM_MODIFIER) != null) attr.removeModifier(FAST_SWIM_MODIFIER);
         if (isDoing()) {

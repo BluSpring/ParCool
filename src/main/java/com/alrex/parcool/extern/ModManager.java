@@ -1,9 +1,7 @@
 package com.alrex.parcool.extern;
 
 
-import net.neoforged.fml.ModList;
-
-import javax.annotation.Nullable;
+import net.fabricmc.loader.api.FabricLoader;
 
 public abstract class ModManager {
     private boolean installed = false;
@@ -14,9 +12,7 @@ public abstract class ModManager {
     }
 
     public void init() {
-        @Nullable
-        var mod = ModList.get().getModFileById(modId);
-        installed = mod != null;
+        installed = FabricLoader.getInstance().isModLoaded(modId);
     }
 
     // These are called After `init` method

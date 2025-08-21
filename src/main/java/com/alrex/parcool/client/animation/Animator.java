@@ -1,9 +1,9 @@
 package com.alrex.parcool.client.animation;
 
 import com.alrex.parcool.common.attachment.common.Parkourability;
+import io.github.fabricators_of_create.porting_lib.client_events.event.client.ViewportEvent;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.client.event.RenderFrameEvent;
-import net.neoforged.neoforge.client.event.ViewportEvent;
 
 public abstract class Animator {
 	private int tick = 0;
@@ -63,7 +63,7 @@ public abstract class Animator {
 	}
 
 	public void onRenderTick(
-            RenderFrameEvent event,
+            DeltaTracker tracker,
 			Player player,
 			Parkourability parkourability
 	) {

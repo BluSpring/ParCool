@@ -65,7 +65,7 @@ It returns whether the stamina is in exhausted state.
 
 ---
 
-##### `@OnlyIn(Dist.Client) void setValue(int value)`
+##### `@Environment(EnvType.CLIENT) void setValue(int value)`
 
 It sets current value.
 
@@ -75,7 +75,7 @@ This method can be called only for a local player on client side
 
 ---
 
-##### `@OnlyIn(Dist.Client) void consume(int value)`
+##### `@Environment(EnvType.CLIENT) void consume(int value)`
 
 It consumes stamina by passed value.
 
@@ -85,7 +85,7 @@ This method can be called only for a local player on client side
 
 ---
 
-##### `@OnlyIn(Dist.Client) void recover(int value)`
+##### `@Environment(EnvType.CLIENT) void recover(int value)`
 
 It recovers stamina by passed value.
 

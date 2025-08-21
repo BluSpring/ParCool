@@ -4,13 +4,15 @@ import com.alrex.parcool.common.action.impl.ChargeJump;
 import com.alrex.parcool.common.action.impl.Dive;
 import com.alrex.parcool.common.action.impl.Flipping;
 import com.alrex.parcool.common.attachment.common.Parkourability;
+import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingEvents;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.entity.living.LivingEvent;
 
 public class PlayerJumpHandler {
-	@SubscribeEvent
-	public static void onJump(LivingEvent.LivingJumpEvent event) {
+    public static void init() {
+        LivingEvents.LivingJumpEvent.EVENT.register(PlayerJumpHandler::onJump);
+    }
+
+	public static void onJump(LivingEvents.LivingJumpEvent event) {
 		if (!(event.getEntity() instanceof Player player)) return;
 		Parkourability parkourability = Parkourability.get(player);
 		if (parkourability == null) return;

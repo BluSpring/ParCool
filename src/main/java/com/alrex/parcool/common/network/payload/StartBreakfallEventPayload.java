@@ -4,14 +4,17 @@ import com.alrex.parcool.ParCool;
 import com.alrex.parcool.common.action.impl.BreakfallReady;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import io.netty.buffer.ByteBuf;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public record StartBreakfallEventPayload(boolean justTimed) implements CustomPacketPayload {
     public static final Type<StartBreakfallEventPayload> TYPE
@@ -22,21 +25,22 @@ public record StartBreakfallEventPayload(boolean justTimed) implements CustomPac
             StartBreakfallEventPayload::new
     );
 
-    @Nonnull
+    @NotNull
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
 
-    public static void handleClient(StartBreakfallEventPayload payload, IPayloadContext context) {
-        context.enqueueWork(() -> {
-            Player player = context.player();
+    @Environment(EnvType.CLIENT)
+    public static void handleClient(StartBreakfallEventPayload payload, ClientPlayNetworking.Context context) {
+        Player player = context.player();
+        context.client().execute(() -> {
             Parkourability parkourability = Parkourability.get(player);
             parkourability.get(BreakfallReady.class).startBreakfall(player, parkourability, payload.justTimed());
         });
     }
 
-    public static void handleServer(StartBreakfallEventPayload payload, IPayloadContext context) {
+    public static void handleServer(StartBreakfallEventPayload payload, ServerPlayNetworking.Context context) {
         throw new UnsupportedOperationException("This should have been designed not to be called");
     }
 }

@@ -9,7 +9,13 @@ import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.common.attachment.common.ReadonlyStamina;
 import com.alrex.parcool.common.network.payload.ActionStatePayload;
 import com.alrex.parcool.config.ParCoolConfig;
+import io.github.fabricators_of_create.porting_lib.client_events.event.client.ViewportEvent;
+import io.github.fabricators_of_create.porting_lib.entity.events.tick.PlayerTickEvent;
+import io.github.fabricators_of_create.porting_lib.event.client.RenderFrameEvent;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
@@ -18,14 +24,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.client.event.RenderFrameEvent;
-import net.neoforged.neoforge.client.event.ViewportEvent;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import org.apache.logging.log4j.Level;
 
 import java.nio.ByteBuffer;
@@ -47,8 +47,15 @@ public class ActionProcessor {
 	private final ByteBuffer bufferOfStarting = ByteBuffer.allocate(128);
 	private int staminaSyncCoolTimeTick = 0;
 
-	@OnlyIn(Dist.CLIENT)
-	@SubscribeEvent
+    public ActionProcessor() {
+        PlayerTickEvent.Pre.EVENT.register(this::onTick);
+
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+            PlayerTickEvent.Post.EVENT.register(this::onTickInClient);
+            registerClient();
+        }
+    }
+
 	public void onTickInClient(PlayerTickEvent.Post event) {
 		if (!event.getEntity().level().isClientSide()) return;
 		AbstractClientPlayer player = (AbstractClientPlayer) event.getEntity();
@@ -59,7 +66,6 @@ public class ActionProcessor {
 		animation.tick(player, parkourability);
 	}
 
-	@SubscribeEvent
 	public void onTick(PlayerTickEvent.Pre event) {
 		Player player = event.getEntity();
 		Parkourability parkourability = Parkourability.get(player);
@@ -114,14 +120,14 @@ public class ActionProcessor {
 			if (player.isLocalPlayer()) {
 				if (action.isDoing()) {
 					boolean canContinue = parkourability.getActionInfo().can(action.getClass())
-							&& !player.getData(Attachments.STAMINA).isExhausted()
-							&& !NeoForge.EVENT_BUS.post(new ParCoolActionEvent.TryToContinueEvent(player, action)).isCanceled()
+							&& !player.getAttachedOrCreate(Attachments.STAMINA).isExhausted()
+							&& !(new ParCoolActionEvent.TryToContinueEvent(player, action)).post()
 							&& action.canContinue(player, parkourability);
 					if (!canContinue) {
 						action.setDoing(false);
 						action.onStopInLocalClient(player);
 						action.onStop(player);
-						NeoForge.EVENT_BUS.post(new ParCoolActionEvent.StopEvent(player, action));
+						(new ParCoolActionEvent.StopEvent(player, action)).sendEvent();
 						syncStates.addLast(new ActionStatePayload.Entry(
 								action.getClass(),
 								ActionStatePayload.Entry.Type.Finish,
@@ -132,8 +138,8 @@ public class ActionProcessor {
 					bufferOfStarting.clear();
 					boolean start = !player.isSpectator()
 							&& parkourability.getActionInfo().can(action.getClass())
-							&& !player.getData(Attachments.STAMINA).isExhausted()
-							&& !NeoForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStartEvent(player, action)).isCanceled()
+							&& !player.getAttachedOrCreate(Attachments.STAMINA).isExhausted()
+							&& !(new ParCoolActionEvent.TryToStartEvent(player, action)).post()
 							&& action.canStart(player, parkourability, bufferOfStarting);
 					bufferOfStarting.flip();
 					if (start) {
@@ -142,7 +148,7 @@ public class ActionProcessor {
 						bufferOfStarting.rewind();
 						action.onStartInLocalClient(player, parkourability, bufferOfStarting);
 						bufferOfStarting.rewind();
-						NeoForge.EVENT_BUS.post(new ParCoolActionEvent.StartEvent(player, action));
+						(new ParCoolActionEvent.StartEvent(player, action)).sendEvent();
 						var data = new byte[bufferOfStarting.remaining()];
 						bufferOfStarting.get(data);
 						syncStates.addLast(new ActionStatePayload.Entry(
@@ -206,7 +212,7 @@ public class ActionProcessor {
 			}
 		}
 		if (needSync) {
-			PacketDistributor.sendToServer(new ActionStatePayload(player.getUUID(), syncStates));
+            ClientPlayNetworking.send(new ActionStatePayload(player.getUUID(), syncStates));
 			if (!parkourability.limitationIsNotSynced() && player instanceof LocalPlayer localPlayer) {
 				var stamina = LocalStamina.get(localPlayer);
 				staminaSyncCoolTimeTick++;
@@ -220,7 +226,7 @@ public class ActionProcessor {
 		if (!player.level().isClientSide()) {
 			var attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
 			if (attr != null) {
-				ReadonlyStamina readonlyStamina = player.getData(Attachments.STAMINA);
+				ReadonlyStamina readonlyStamina = player.getAttachedOrCreate(Attachments.STAMINA);
 				if (readonlyStamina.isExhausted() && parkourability.getClientInfo().get(ParCoolConfig.Client.Booleans.EnableStaminaExhaustionPenalty)) {
 					player.setSprinting(false);
 					if (!attr.hasModifier(STAMINA_DEPLETED_SLOWNESS_MODIFIER_ID)) {
@@ -233,9 +239,12 @@ public class ActionProcessor {
 		}
 	}
 
-	@OnlyIn(Dist.CLIENT)
-	@SubscribeEvent
-	public void onRenderTick(RenderFrameEvent.Pre event) {
+    private void registerClient() {
+        RenderFrameEvent.PRE.register(this::onRenderTick);
+
+    }
+
+	public void onRenderTick(DeltaTracker tracker) {
 		Player clientPlayer = Minecraft.getInstance().player;
 		if (clientPlayer == null) return;
 		for (Player player : clientPlayer.getCommandSenderWorld().players()) {
@@ -243,16 +252,15 @@ public class ActionProcessor {
 			if (parkourability == null) return;
 			List<Action> actions = parkourability.getList();
 			for (Action action : actions) {
-				action.onRenderTick(event, player, parkourability);
+				action.onRenderTick(tracker, player, parkourability);
 			}
 			Animation animation = Animation.get(player);
 			if (animation == null) return;
-			animation.onRenderTick(event, player, parkourability);
+			animation.onRenderTick(tracker, player, parkourability);
 		}
 	}
 
-	@OnlyIn(Dist.CLIENT)
-	@SubscribeEvent
+	@Environment(EnvType.CLIENT)
 	public void onViewRender(ViewportEvent.ComputeCameraAngles event) {
         LocalPlayer player = Minecraft.getInstance().player;
 		if (player == null) return;

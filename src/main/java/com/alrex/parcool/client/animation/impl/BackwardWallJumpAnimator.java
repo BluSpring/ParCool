@@ -7,9 +7,9 @@ import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.alrex.parcool.utilities.EasingFunctions;
 import com.alrex.parcool.utilities.MathUtil;
+import io.github.fabricators_of_create.porting_lib.client_events.event.client.ViewportEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.client.event.ViewportEvent;
 
 public class BackwardWallJumpAnimator extends Animator {
 	private final int maxTick = 12;

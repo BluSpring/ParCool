@@ -2,8 +2,8 @@ package com.alrex.parcool.common.action;
 
 import com.alrex.parcool.common.action.impl.*;
 import com.alrex.parcool.common.action.instant.StartSwimByCrawl;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;

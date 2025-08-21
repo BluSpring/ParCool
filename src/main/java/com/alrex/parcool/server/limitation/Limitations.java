@@ -6,15 +6,13 @@ import com.alrex.parcool.common.info.ServerLimitation;
 import com.alrex.parcool.common.network.payload.LimitationPayload;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.LevelResource;
-import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
-import net.neoforged.neoforge.event.server.ServerStoppingEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.io.FileUtils;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -84,13 +82,13 @@ public class Limitations {
     public static void update(ServerPlayer player) {
         Parkourability parkourability = Parkourability.get(player);
         parkourability.getActionInfo().setServerLimitation(ServerLimitation.get(player));
-        PacketDistributor.sendToPlayer(player, new LimitationPayload(parkourability.getActionInfo().getServerLimitation()));
+        ServerPlayNetworking.send(player, new LimitationPayload(parkourability.getActionInfo().getServerLimitation()));
     }
 
     public static void updateOnlyLimitation(ServerPlayer player) {
         Parkourability parkourability = Parkourability.get(player);
         parkourability.getActionInfo().setServerLimitation(ServerLimitation.get(player));
-        PacketDistributor.sendToPlayer(player, new LimitationPayload(parkourability.getActionInfo().getServerLimitation()));
+        ServerPlayNetworking.send(player, new LimitationPayload(parkourability.getActionInfo().getServerLimitation()));
     }
 
     public static SortedMap<Limitation.ID, Limitation> load(UUID playerID) {
@@ -193,9 +191,9 @@ public class Limitations {
         ParCool.LOGGER.info("Limitation of " + playerID + " was unloaded");
     }
 
-    public static void init(ServerAboutToStartEvent event) {
+    public static void init(MinecraftServer server) {
         GlobalLimitation.readFromServerConfig();
-        Path configPath = getServerConfigPath(event.getServer());
+        Path configPath = getServerConfigPath(server);
         LimitationFolderRootPath = configPath.resolve("parcool").resolve("limitations");
         File limitationFolder = LimitationFolderRootPath.toFile();
         if (!limitationFolder.exists()) {
@@ -203,8 +201,8 @@ public class Limitations {
         }
     }
 
-    public static void save(ServerStoppingEvent event) {
-        Path configPath = getServerConfigPath(event.getServer());
+    public static void save(MinecraftServer server) {
+        Path configPath = getServerConfigPath(server);
         Path limitationRootPath = configPath.resolve("parcool").resolve("limitations");
         for (Map.Entry<UUID, SortedMap<Limitation.ID, Limitation>> limitationEntry : Loaded.entrySet()) {
             UUID playerID = limitationEntry.getKey();

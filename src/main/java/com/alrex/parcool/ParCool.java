@@ -24,77 +24,72 @@ import com.alrex.parcool.extern.AdditionalMods;
 import com.alrex.parcool.server.command.CommandRegistry;
 import com.alrex.parcool.server.command.args.ParCoolArgumentTypeInfos;
 import com.alrex.parcool.server.limitation.Limitations;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModLoadingContext;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
-import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import com.mojang.brigadier.CommandDispatcher;
+import io.github.fabricators_of_create.porting_lib.config.ConfigRegistry;
+import io.github.fabricators_of_create.porting_lib.config.ModConfig;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.commands.CommandSourceStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(ParCool.MOD_ID)
-public class ParCool {
+public class ParCool implements ModInitializer {
 	public static final String MOD_ID = "parcool";
 
 	public static final Logger LOGGER = LogManager.getLogger();
 
-	public ParCool(ModContainer container) {
-		IEventBus eventBus = ModLoadingContext.get().getActiveContainer().getEventBus();
-		assert eventBus != null;
-		EventBusForgeRegistry.register(NeoForge.EVENT_BUS);
-        if (FMLEnvironment.dist == Dist.CLIENT) {
-            EventBusForgeRegistry.registerClient(NeoForge.EVENT_BUS);
-            eventBus.addListener(KeyBindings::register);
-			eventBus.addListener(Renderers::register);
-			eventBus.addListener(Items::registerColors);
-			ClientAttachments.registerAll(eventBus);
+	public void onInitialize() {
+        Effects.registerAll();
+        Potions.registerAll();
+        Attributes.registerAll();
+        SoundEvents.registerAll();
+        Blocks.registerAll();
+        Items.registerAll();
+        CreativeTabs.registerAll();
+        Recipes.registerAll();
+        EntityTypes.registerAll();
+        TileEntities.registerAll();
+        DataComponents.registerAll();
+        Attachments.registerAll();
+        ParCoolArgumentTypeInfos.registerAll();
+
+		EventBusForgeRegistry.register();
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+            EventBusForgeRegistry.registerClient();
+            KeyBindings.register();
+            Renderers.register();
+            Items.registerColors();
+			ClientAttachments.registerAll();
         }
-        eventBus.addListener(this::setup);
-		eventBus.addListener(this::loaded);
-		eventBus.register(AddAttributesHandler.class);
-		eventBus.register(NetworkRegistries.class);
-		eventBus.register(HUDRegistry.class);
+        this.setup();
+        this.loaded();
+        AddAttributesHandler.init();
+        NetworkRegistries.init();
+        HUDRegistry.init();
 
-		Effects.registerAll(eventBus);
-		Potions.registerAll(eventBus);
-		Attributes.registerAll(eventBus);
-		SoundEvents.registerAll(eventBus);
-		Blocks.registerAll(eventBus);
-		Items.registerAll(eventBus);
-		CreativeTabs.registerAll(eventBus);
-		Recipes.registerAll(eventBus);
-		EntityTypes.registerAll(eventBus);
-		TileEntities.registerAll(eventBus);
-		DataComponents.registerAll(eventBus);
-		Attachments.registerAll(eventBus);
-		ParCoolArgumentTypeInfos.registerAll(eventBus);
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> registerCommand(dispatcher));
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> Limitations.init(server));
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> Limitations.save(server));
 
-		NeoForge.EVENT_BUS.addListener(this::registerCommand);
-		NeoForge.EVENT_BUS.addListener(Limitations::init);
-		NeoForge.EVENT_BUS.addListener(Limitations::save);
-
-		container.registerConfig(ModConfig.Type.SERVER, ParCoolConfig.Server.getConfigSpec());
-		container.registerConfig(ModConfig.Type.CLIENT, ParCoolConfig.Client.getConfigSpec());
+		ConfigRegistry.registerConfig(MOD_ID, ModConfig.Type.SERVER, ParCoolConfig.Server.getConfigSpec());
+		ConfigRegistry.registerConfig(MOD_ID, ModConfig.Type.CLIENT, ParCoolConfig.Client.getConfigSpec());
 	}
 
-	private void loaded(FMLLoadCompleteEvent event) {
+	private void loaded() {
 		AdditionalMods.init();
-		switch (FMLEnvironment.dist) {
+		switch (FabricLoader.getInstance().getEnvironmentType()) {
 			case CLIENT -> AdditionalMods.initInClient();
-			case DEDICATED_SERVER -> AdditionalMods.initInDedicatedServer();
+            case SERVER -> AdditionalMods.initInDedicatedServer();
 		}
 	}
 
-	private void setup(final FMLCommonSetupEvent event) {
+	private void setup() {
 	}
 
-	private void registerCommand(final RegisterCommandsEvent event) {
-		CommandRegistry.register(event.getDispatcher());
+	private void registerCommand(final CommandDispatcher<CommandSourceStack> dispatcher) {
+		CommandRegistry.register(dispatcher);
 	}
 }

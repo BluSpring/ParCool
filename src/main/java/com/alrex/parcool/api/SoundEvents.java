@@ -1,12 +1,11 @@
 package com.alrex.parcool.api;
 
 import com.alrex.parcool.ParCool;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredHolder;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredRegister;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class SoundEvents {
     private static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(Registries.SOUND_EVENT, ParCool.MOD_ID);
@@ -50,7 +49,7 @@ public class SoundEvents {
     public static final DeferredHolder<SoundEvent, SoundEvent> ZIPLINE_SET = SOUNDS.register("zipline.set", () -> ZIPLINE_SET_SOUND);
     public static final DeferredHolder<SoundEvent, SoundEvent> ZIPLINE_REMOVE = SOUNDS.register("zipline.remove", () -> ZIPLINE_REMOVE_SOUND);
 
-    public static void registerAll(IEventBus modBus) {
-        SOUNDS.register(modBus);
+    public static void registerAll() {
+        SOUNDS.register();
     }
 }

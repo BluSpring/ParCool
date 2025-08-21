@@ -3,6 +3,7 @@ package com.alrex.parcool.common.action.impl;
 import com.alrex.parcool.api.SoundEvents;
 import com.alrex.parcool.client.animation.impl.VerticalWallRunAnimator;
 import com.alrex.parcool.client.input.KeyBindings;
+import com.alrex.parcool.utilities.fabric.FabricUtil;
 import com.alrex.parcool.common.action.Action;
 import com.alrex.parcool.common.action.StaminaConsumeTiming;
 import com.alrex.parcool.common.attachment.client.Animation;
@@ -10,6 +11,7 @@ import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.alrex.parcool.utilities.VectorUtil;
 import com.alrex.parcool.utilities.WorldUtil;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -18,9 +20,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.event.RenderFrameEvent;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 import java.nio.ByteBuffer;
 
@@ -65,7 +66,7 @@ public class VerticalWallRun extends Action {
 							(int) (player.getZ() + wall.z())
 					);
 					if (!player.getCommandSenderWorld().isLoaded(targetBlock)) return false;
-					float slipperiness = player.getCommandSenderWorld().getBlockState(targetBlock).getFriction(player.getCommandSenderWorld(), targetBlock, player);
+					float slipperiness = FabricUtil.getFriction(player.getCommandSenderWorld().getBlockState(targetBlock), player.getCommandSenderWorld(), targetBlock, player);
 					startInfo.putDouble(height);
 					startInfo.putFloat(slipperiness);
 					startInfo.putDouble(wall.x());
@@ -115,7 +116,7 @@ public class VerticalWallRun extends Action {
 	}
 
 	@Override
-    public void onRenderTick(RenderFrameEvent event, Player player, Parkourability parkourability) {
+    public void onRenderTick(DeltaTracker tracker, Player player, Parkourability parkourability) {
 		if (wallDirection != null && isDoing()) {
 			player.setYHeadRot((float) VectorUtil.toYawDegree(wallDirection));
             player.yBodyRotO = player.yBodyRot = player.getYHeadRot();
@@ -132,7 +133,7 @@ public class VerticalWallRun extends Action {
 		return StaminaConsumeTiming.OnStart;
 	}
 
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	public void spawnRunningParticle(Player player) {
 		if (!ParCoolConfig.Client.Booleans.EnableActionParticles.get()) return;
 		if (wallDirection == null) return;
@@ -161,7 +162,7 @@ public class VerticalWallRun extends Action {
                     .scale(2 + 4 * player.getRandom().nextDouble())
                     .add(0, 0.5, 0);
             level.addParticle(
-                    new BlockParticleOption(ParticleTypes.BLOCK, blockstate).setPos(leanedBlock),
+                    new BlockParticleOption(ParticleTypes.BLOCK, blockstate).setSourcePos(leanedBlock),
                     particlePos.x(),
                     particlePos.y(),
                     particlePos.z(),

@@ -12,7 +12,7 @@ import com.alrex.parcool.utilities.EasingFunctions;
 import com.alrex.parcool.utilities.MathUtil;
 import net.minecraft.world.entity.player.Player;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class DiveAnimationHostAnimator extends Animator {
     public DiveAnimationHostAnimator(double ySpeed, boolean fromInAir) {

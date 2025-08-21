@@ -3,6 +3,8 @@ package com.alrex.parcool.common.block.zipline;
 import com.alrex.parcool.common.entity.zipline.ZiplineRopeEntity;
 import com.alrex.parcool.common.item.Items;
 import com.alrex.parcool.common.item.zipline.ZiplineRopeItem;
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.ChunkUnloadListeningBlockEntity;
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.CustomUpdateTagHandlingBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -18,12 +20,12 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ZiplineHookTileEntity extends BlockEntity {
+public class ZiplineHookTileEntity extends BlockEntity implements ChunkUnloadListeningBlockEntity, CustomUpdateTagHandlingBlockEntity {
 
     private final TreeMap<BlockPos, ZiplineInfo> connections = new TreeMap<>();
 
@@ -77,7 +79,7 @@ public class ZiplineHookTileEntity extends BlockEntity {
 
     @Override
     public void onChunkUnloaded() {
-        super.onChunkUnloaded();
+        ChunkUnloadListeningBlockEntity.super.onChunkUnloaded();
         if (level != null) {
             getConnectionPoints().stream()
                     .filter(level::isLoaded)
@@ -182,7 +184,7 @@ public class ZiplineHookTileEntity extends BlockEntity {
         restoreFrom(tag);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         var nbt = super.getUpdateTag(registries);
@@ -192,7 +194,7 @@ public class ZiplineHookTileEntity extends BlockEntity {
 
     @Override
     public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
-        super.handleUpdateTag(tag, lookupProvider);
+        CustomUpdateTagHandlingBlockEntity.super.handleUpdateTag(tag, lookupProvider);
         restoreFrom(tag);
     }
 

@@ -23,8 +23,8 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.List;
@@ -32,7 +32,7 @@ import java.util.List;
 public class ZiplineRopeItem extends Item {
     public static class RopeColor implements ItemColor {
         @Override
-        public int getColor(@Nonnull ItemStack itemStack, int i) {
+        public int getColor(@NotNull ItemStack itemStack, int i) {
             return i > 0 ? -1 : ZiplineRopeItem.getColor(itemStack);
         }
     }
@@ -51,7 +51,7 @@ public class ZiplineRopeItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nonnull TooltipContext context, @Nonnull List<Component> lines, @Nonnull TooltipFlag tooltipFlag) {
+    public void appendHoverText(ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> lines, @NotNull TooltipFlag tooltipFlag) {
         var posComponent = stack.getComponents().get(DataComponents.ZIPLINE_POSITION.get());
 
         if (posComponent != null) {
@@ -77,9 +77,9 @@ public class ZiplineRopeItem extends Item {
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public InteractionResult useOn(@Nonnull UseOnContext context) {
+    public InteractionResult useOn(@NotNull UseOnContext context) {
         ItemStack stack = context.getItemInHand();
 
         // First Point is already registered
@@ -188,11 +188,11 @@ public class ZiplineRopeItem extends Item {
     }
 
     public static void setBlockPosition(ItemStack stack, BlockPos pos) {
-        stack.set(DataComponents.ZIPLINE_POSITION, new ZiplinePositionComponent(pos));
+        stack.set(DataComponents.ZIPLINE_POSITION.get(), new ZiplinePositionComponent(pos));
     }
 
     public static void removeBlockPosition(ItemStack stack) {
-        stack.remove(DataComponents.ZIPLINE_POSITION);
+        stack.remove(DataComponents.ZIPLINE_POSITION.get());
     }
 
     public static boolean hasBlockPosition(ItemStack stack) {
@@ -207,24 +207,24 @@ public class ZiplineRopeItem extends Item {
 
     public static void setColor(ItemStack stack, int color) {
         if (color != DEFAULT_COLOR) {
-            stack.set(DataComponents.ZIPLINE_COLOR, new ZiplineColorComponent(color));
+            stack.set(DataComponents.ZIPLINE_COLOR.get(), new ZiplineColorComponent(color));
         }else {
-            stack.remove(DataComponents.ZIPLINE_COLOR);
+            stack.remove(DataComponents.ZIPLINE_COLOR.get());
         }
     }
 
     public static int getColor(ItemStack stack) {
-        var colorComp = stack.get(DataComponents.ZIPLINE_COLOR);
+        var colorComp = stack.get(DataComponents.ZIPLINE_COLOR.get());
         return colorComp == null ? DEFAULT_COLOR : colorComp.color();
     }
 
     public static boolean hasCustomColor(ItemStack stack) {
-        var colorComp = stack.get(DataComponents.ZIPLINE_COLOR);
+        var colorComp = stack.get(DataComponents.ZIPLINE_COLOR.get());
         return colorComp != null && colorComp.color() != DEFAULT_COLOR;
     }
 
     public static ZiplineType getZiplineType(ItemStack stack) {
-        var tensionComp = stack.get(DataComponents.ZIPLINE_TENSION);
+        var tensionComp = stack.get(DataComponents.ZIPLINE_TENSION.get());
         return tensionComp == null ? ZiplineType.STANDARD : tensionComp.type();
     }
 
@@ -234,6 +234,6 @@ public class ZiplineRopeItem extends Item {
     }
 
     public static void setZiplineType(ItemStack stack, ZiplineType type) {
-        stack.set(DataComponents.ZIPLINE_TENSION, new ZiplineTensionComponent(type));
+        stack.set(DataComponents.ZIPLINE_TENSION.get(), new ZiplineTensionComponent(type));
     }
 }

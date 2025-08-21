@@ -7,12 +7,12 @@ import com.alrex.parcool.common.info.ActionInfo;
 import com.alrex.parcool.common.info.ClientSetting;
 import com.alrex.parcool.common.network.payload.ClientInformationPayload;
 import com.alrex.parcool.config.ParCoolConfig;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.Collections;
 import java.util.function.BooleanSupplier;
@@ -106,7 +106,7 @@ public class SettingActionLimitationScreen extends ParCoolSettingScreen {
         Parkourability parkourability = Parkourability.get(player);
         if (parkourability == null) return;
         parkourability.getActionInfo().setClientSetting(ClientSetting.readFromLocalConfig());
-        PacketDistributor.sendToServer(new ClientInformationPayload(player.getUUID(), true, parkourability.getClientInfo()));
+        ClientPlayNetworking.send(new ClientInformationPayload(player.getUUID(), true, parkourability.getClientInfo()));
     }
 
     private static class ActionConfigSet {

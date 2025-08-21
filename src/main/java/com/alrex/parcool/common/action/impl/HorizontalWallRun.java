@@ -3,6 +3,7 @@ package com.alrex.parcool.common.action.impl;
 import com.alrex.parcool.api.SoundEvents;
 import com.alrex.parcool.client.animation.impl.HorizontalWallRunAnimator;
 import com.alrex.parcool.client.input.KeyBindings;
+import com.alrex.parcool.utilities.fabric.FabricUtil;
 import com.alrex.parcool.common.action.Action;
 import com.alrex.parcool.common.action.StaminaConsumeTiming;
 import com.alrex.parcool.common.attachment.Attachments;
@@ -13,6 +14,7 @@ import com.alrex.parcool.config.ParCoolConfig;
 import com.alrex.parcool.utilities.BufferUtil;
 import com.alrex.parcool.utilities.VectorUtil;
 import com.alrex.parcool.utilities.WorldUtil;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -23,9 +25,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.event.RenderFrameEvent;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 import java.nio.ByteBuffer;
 
@@ -51,7 +52,7 @@ public class HorizontalWallRun extends Action {
 		if (coolTime > 0) coolTime--;
 	}
 
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	@Override
     public void onWorkingTickInLocalClient(Player player, Parkourability parkourability) {
 		Vec3 wallDirection = WorldUtil.getRunnableWall(player, player.getBbWidth() * 0.65f);
@@ -73,7 +74,7 @@ public class HorizontalWallRun extends Action {
 				(int) (player.getZ() + runningWallDirection.z())
 		);
 		if (!player.getCommandSenderWorld().isLoaded(leanedBlock)) return;
-		float slipperiness = player.getCommandSenderWorld().getBlockState(leanedBlock).getFriction(player.getCommandSenderWorld(), leanedBlock, player);
+		float slipperiness = FabricUtil.getFriction(player.getCommandSenderWorld().getBlockState(leanedBlock), player.getCommandSenderWorld(), leanedBlock, player);
 		if (slipperiness <= 0.8) {
             double speedScale = 0.2;
             var attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
@@ -88,7 +89,7 @@ public class HorizontalWallRun extends Action {
 		}
 	}
 
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	@Override
     public boolean canStart(Player player, Parkourability parkourability, ByteBuffer startInfo) {
 		Vec3 wallDirection = WorldUtil.getRunnableWall(player, player.getBbWidth() * 0.65f);
@@ -135,7 +136,7 @@ public class HorizontalWallRun extends Action {
 		);
 	}
 
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	@Override
     public boolean canContinue(Player player, Parkourability parkourability) {
 		Vec3 wallDirection = WorldUtil.getRunnableWall(player, player.getBbWidth() * 0.65f);
@@ -152,7 +153,7 @@ public class HorizontalWallRun extends Action {
 			return false;
 		}
 		return (getDoingTick() < getMaxRunningTick(parkourability.getActionInfo())
-                && !player.getData(Attachments.STAMINA).isExhausted()
+                && !player.getAttachedOrCreate(Attachments.STAMINA).isExhausted()
 				&& !parkourability.get(WallJump.class).justJumped()
 				&& !parkourability.get(Crawl.class).isDoing()
 				&& !parkourability.get(Dodge.class).isDoing()
@@ -194,9 +195,9 @@ public class HorizontalWallRun extends Action {
 		}
 	}
 
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	@Override
-    public void onRenderTick(RenderFrameEvent event, Player player, Parkourability parkourability) {
+    public void onRenderTick(DeltaTracker tracker, Player player, Parkourability parkourability) {
 		if (isDoing()) {
 			if (runningDirection == null) return;
 			Vec3 lookVec = VectorUtil.fromYawDegree(player.getYHeadRot());
@@ -235,7 +236,7 @@ public class HorizontalWallRun extends Action {
 		return StaminaConsumeTiming.OnWorking;
 	}
 
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	public void spawnRunningParticle(Player player) {
 		if (!ParCoolConfig.Client.Booleans.EnableActionParticles.get()) return;
 		if (runningDirection == null || runningWallDirection == null) return;
@@ -264,7 +265,7 @@ public class HorizontalWallRun extends Action {
                     .scale(3 + 6 * player.getRandom().nextDouble())
                     .add(0, 1.5, 0);
             level.addParticle(
-                    new BlockParticleOption(ParticleTypes.BLOCK, blockstate).setPos(leanedBlock),
+                    new BlockParticleOption(ParticleTypes.BLOCK, blockstate).setSourcePos(leanedBlock),
                     particlePos.x(),
                     particlePos.y(),
                     particlePos.z(),

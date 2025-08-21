@@ -2,6 +2,7 @@ package com.alrex.parcool.common.action.impl;
 
 import com.alrex.parcool.client.animation.impl.WallSlideAnimator;
 import com.alrex.parcool.client.input.KeyBindings;
+import com.alrex.parcool.utilities.fabric.FabricUtil;
 import com.alrex.parcool.common.action.Action;
 import com.alrex.parcool.common.action.StaminaConsumeTiming;
 import com.alrex.parcool.common.attachment.Attachments;
@@ -18,10 +19,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.nio.ByteBuffer;
 
 ;
@@ -37,7 +38,7 @@ public class WallSlide extends Action {
 		return leanedWallDirection;
 	}
 
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	@Override
     public boolean canStart(Player player, Parkourability parkourability, ByteBuffer startInfo) {
         startInfo.putDouble(Math.abs(player.getDeltaMovement().y()));
@@ -54,7 +55,7 @@ public class WallSlide extends Action {
 				&& !player.getAbilities().flying
 				&& player.getDeltaMovement().y <= 0
 				&& KeyBindings.getKeyWallSlide().isDown()
-                && !player.getData(Attachments.STAMINA).isExhausted()
+                && !player.getAttachedOrCreate(Attachments.STAMINA).isExhausted()
                 && !parkourability.get(Dive.class).isDoing()
 				&& !parkourability.get(ClingToCliff.class).isDoing()
 				&& parkourability.get(ClingToCliff.class).getNotDoingTick() > 12
@@ -74,7 +75,7 @@ public class WallSlide extends Action {
         damageCoolTime = 0;
     }
 
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	@Override
     public void onWorkingTickInClient(Player player, Parkourability parkourability) {
 		Animation animation = Animation.get(player);
@@ -103,7 +104,7 @@ public class WallSlide extends Action {
 					(int) (player.getZ() + leanedWallDirection.z)
 			);
 			if (!player.getCommandSenderWorld().isLoaded(leanedBlock)) return;
-			float slipperiness = player.getCommandSenderWorld().getBlockState(leanedBlock).getFriction(player.getCommandSenderWorld(), leanedBlock, player);
+			float slipperiness = FabricUtil.getFriction(player.getCommandSenderWorld().getBlockState(leanedBlock), player.getCommandSenderWorld(), leanedBlock, player);
 			slipperiness = (float) Math.sqrt(slipperiness);
 			player.fallDistance *= slipperiness;
 			player.setDeltaMovement(player.getDeltaMovement().multiply(0.8, slipperiness, 0.8));
@@ -123,7 +124,7 @@ public class WallSlide extends Action {
         }
     }
 
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	private void spawnSlideParticle(Player player) {
 		if (!ParCoolConfig.Client.Booleans.EnableActionParticles.get()) return;
 		if (leanedWallDirection == null) return;
@@ -153,7 +154,7 @@ public class WallSlide extends Action {
                     .scale(0.05)
                     .add(0, -0.5 - player.getRandom().nextDouble(), 0);
             level.addParticle(
-                    new BlockParticleOption(ParticleTypes.BLOCK, blockstate).setPos(leanedBlock),
+                    new BlockParticleOption(ParticleTypes.BLOCK, blockstate).setSourcePos(leanedBlock),
                     particlePos.x(),
                     particlePos.y(),
                     particlePos.z(),

@@ -1,13 +1,15 @@
 package com.alrex.parcool.common.potion;
 
 
+import io.github.fabricators_of_create.porting_lib.brewing.RegisterBrewingRecipesEvent;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potions;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
 
 public class ParCoolBrewingRecipe {
-    @SubscribeEvent
+    public static void init() {
+        RegisterBrewingRecipesEvent.EVENT.register(ParCoolBrewingRecipe::onRegister);
+    }
+
     public static void onRegister(RegisterBrewingRecipesEvent event) {
         event.getBuilder()
                 .addMix(

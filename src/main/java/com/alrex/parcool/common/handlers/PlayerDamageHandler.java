@@ -6,21 +6,24 @@ import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.common.network.payload.StartBreakfallEventPayload;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.alrex.parcool.utilities.WorldUtil;
+import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingDamageEvent;
+import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingFallEvent;
+import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingHurtEvent;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 public class PlayerDamageHandler {
-    @SubscribeEvent
-    public static void onAttack(LivingIncomingDamageEvent event) {
+    public static void init() {
+        LivingHurtEvent.EVENT.register(PlayerDamageHandler::onAttack);
+        LivingFallEvent.EVENT.register(PlayerDamageHandler::onFall);
+    }
+
+    public static void onAttack(LivingHurtEvent event) {
         LivingEntity entity = event.getEntity();
         if (entity instanceof Player player) {
             Parkourability parkourability = Parkourability.get(player);
@@ -37,7 +40,6 @@ public class PlayerDamageHandler {
         }
     }
 
-    @SubscribeEvent
     public static void onFall(LivingFallEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
 
@@ -50,7 +52,7 @@ public class PlayerDamageHandler {
 				boolean justTime = parkourability.get(BreakfallReady.class).getDoingTick() < 5;
 				float distance = event.getDistance();
 				if (distance > parkourability.getClientInfo().get(ParCoolConfig.Client.Doubles.LowestFallDistanceForBreakfall)) {
-                    PacketDistributor.sendToPlayer(player, new StartBreakfallEventPayload(justTime));
+                    ServerPlayNetworking.send(player, new StartBreakfallEventPayload(justTime));
 				} else {
 					return;
 				}
@@ -63,7 +65,7 @@ public class PlayerDamageHandler {
 				HideInBlock hideInBlock = parkourability.get(HideInBlock.class);
 				if (hideInBlock.isStandbyInAir(parkourability)
 						&& parkourability.getActionInfo().can(HideInBlock.class)
-                        && !NeoForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStartEvent(player, hideInBlock)).isCanceled()
+                        && !(new ParCoolActionEvent.TryToStartEvent(player, hideInBlock)).post()
 				) {
 					Tuple<BlockPos, BlockPos> area = WorldUtil.getHideAbleSpace(player, new BlockPos(player.blockPosition().below()));
 					if (area != null) {

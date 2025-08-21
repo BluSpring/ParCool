@@ -12,13 +12,14 @@ import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.alrex.parcool.utilities.VectorUtil;
 import com.alrex.parcool.utilities.WorldUtil;
+import committee.nova.mkb.api.IKeyBinding;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.event.RenderFrameEvent;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.nio.ByteBuffer;
 
 public class HangDown extends Action {
@@ -50,7 +51,7 @@ public class HangDown extends Action {
 
 	private BarAxis hangingBarAxis = null;
 
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	@Override
     public boolean canStart(Player player, Parkourability parkourability, ByteBuffer startInfo) {
 		startInfo.putDouble(Math.max(-1, Math.min(1, 3 * player.getLookAngle().multiply(1, 0, 1).normalize().dot(player.getDeltaMovement()))));
@@ -59,14 +60,14 @@ public class HangDown extends Action {
 				&& !parkourability.get(JumpFromBar.class).isDoing()
 				&& !parkourability.get(ClingToCliff.class).isDoing()
 				&& WorldUtil.getHangableBars(player) != null
-				&& (KeyBindings.getKeyHangDown().getKey().equals(KeyBindings.getKeySneak().getKey()) || !player.isShiftKeyDown())
+				&& (((IKeyBinding) KeyBindings.getKeyHangDown()).getKey().equals(((IKeyBinding) KeyBindings.getKeySneak()).getKey()) || !player.isShiftKeyDown())
 		);
 	}
 
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	@Override
     public boolean canContinue(Player player, Parkourability parkourability) {
-        return (!player.getData(Attachments.STAMINA).isExhausted()
+        return (!player.getAttachedOrCreate(Attachments.STAMINA).isExhausted()
 				&& KeyBindings.getKeyHangDown().isDown()
 				&& parkourability.getActionInfo().can(HangDown.class)
 				&& !parkourability.get(JumpFromBar.class).isDoing()
@@ -87,11 +88,11 @@ public class HangDown extends Action {
 		if (animation != null) animation.setAnimator(new HangAnimator());
 	}
 
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	@Override
     public void onStartInLocalClient(Player player, Parkourability parkourability, ByteBuffer startData) {
 		setup(player, startData);
-		if (!KeyBindings.getKeyHangDown().getKey().equals(KeyBindings.getKeySneak().getKey())) {
+		if (!((IKeyBinding) KeyBindings.getKeyHangDown()).getKey().equals(((IKeyBinding) KeyBindings.getKeySneak()).getKey())) {
             parkourability.getBehaviorEnforcer().addMarkerCancellingSneak(ID_SNEAK_CANCEL, this::isDoing);
 		}
 		if (ParCoolConfig.Client.Booleans.EnableActionSounds.get()) {
@@ -107,7 +108,7 @@ public class HangDown extends Action {
         }
 	}
 
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	@Override
     public void onWorkingTickInLocalClient(Player player, Parkourability parkourability) {
 		Vec3 bodyVec = VectorUtil.fromYawDegree(player.yBodyRot);
@@ -159,9 +160,9 @@ public class HangDown extends Action {
 		armSwingAmount = buffer.getFloat();
 	}
 
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	@Override
-    public void onRenderTick(RenderFrameEvent event, Player player, Parkourability parkourability) {
+    public void onRenderTick(DeltaTracker tracker, Player player, Parkourability parkourability) {
 		if (isDoing()) {
 			if (hangingBarAxis == null) return;
 			Vec3 bodyVec = VectorUtil.fromYawDegree(player.yBodyRot).normalize();

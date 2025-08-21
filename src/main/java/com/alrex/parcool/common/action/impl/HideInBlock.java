@@ -21,10 +21,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.nio.ByteBuffer;
 
 public class HideInBlock extends Action {
@@ -263,7 +263,7 @@ public class HideInBlock extends Action {
         player.noPhysics = false;
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     private void spawnOnHideParticles(Player player) {
         if (hidingArea == null) return;
         Level world = player.level();
@@ -310,7 +310,7 @@ public class HideInBlock extends Action {
         );
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public void notifyBlockChanged(BlockPos pos) {
         if (isHidingBlock(pos)) {
             hidingBlockChanged = true;

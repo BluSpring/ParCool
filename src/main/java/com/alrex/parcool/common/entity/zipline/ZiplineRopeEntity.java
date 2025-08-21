@@ -21,8 +21,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class ZiplineRopeEntity extends net.minecraft.world.entity.Entity {
     private static final EntityDataAccessor<BlockPos> DATA_START_POS;
@@ -117,9 +116,9 @@ public class ZiplineRopeEntity extends net.minecraft.world.entity.Entity {
         return distanceSqr < Zipline.MAXIMUM_HORIZONTAL_DISTANCE * Zipline.MAXIMUM_HORIZONTAL_DISTANCE;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public EntityDimensions getDimensions(@Nonnull Pose p_213305_1_) {
+    public EntityDimensions getDimensions(@NotNull Pose p_213305_1_) {
         if (size == null) {
             return EntityDimensions.fixed(0.1f, 0.1f);
         }
@@ -145,7 +144,7 @@ public class ZiplineRopeEntity extends net.minecraft.world.entity.Entity {
     }
 
     @Override
-    public void onSyncedDataUpdated(@Nonnull EntityDataAccessor<?> param) {
+    public void onSyncedDataUpdated(@NotNull EntityDataAccessor<?> param) {
         if (param.equals(DATA_START_POS) || param.equals(DATA_END_POS)) {
             refreshDimensions();
         }
@@ -184,7 +183,7 @@ public class ZiplineRopeEntity extends net.minecraft.world.entity.Entity {
         getEntityData().set(DATA_ZIP_TYPE, type.ordinal());
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public InteractionResult interact(Player player, InteractionHand p_19979_) {
         return InteractionResult.sidedSuccess(player.level().isClientSide());
@@ -199,13 +198,13 @@ public class ZiplineRopeEntity extends net.minecraft.world.entity.Entity {
     }
 
     @Override
-    public void readAdditionalSaveData(@Nonnull CompoundTag compoundNBT) {
+    public void readAdditionalSaveData(@NotNull CompoundTag compoundNBT) {
         setStartPos(new BlockPos(compoundNBT.getInt("Tile1_X"), compoundNBT.getInt("Tile1_Y"), compoundNBT.getInt("Tile1_Z")));
         setEndPos(new BlockPos(compoundNBT.getInt("Tile2_X"), compoundNBT.getInt("Tile2_Y"), compoundNBT.getInt("Tile2_Z")));
     }
 
     @Override
-    public void addAdditionalSaveData(@Nonnull CompoundTag compoundNBT) {
+    public void addAdditionalSaveData(@NotNull CompoundTag compoundNBT) {
         BlockPos startPos = getStartPos();
         BlockPos endPos = getEndPos();
         compoundNBT.putInt("Tile1_X", startPos.getX());

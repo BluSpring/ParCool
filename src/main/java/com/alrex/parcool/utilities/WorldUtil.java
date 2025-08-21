@@ -1,5 +1,6 @@
 package com.alrex.parcool.utilities;
 
+import com.alrex.parcool.utilities.fabric.FabricUtil;
 import com.alrex.parcool.common.action.impl.HangDown;
 import com.alrex.parcool.common.tags.BlockTags;
 import net.minecraft.core.BlockPos;
@@ -16,7 +17,7 @@ import net.minecraft.world.level.block.state.properties.WallSide;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -448,8 +449,8 @@ public class WorldUtil {
 			if (!entity.getCommandSenderWorld().isLoaded(blockPos1)) return null;
 			if (!entity.getCommandSenderWorld().isLoaded(blockPos2)) return null;
 			slipperiness = Math.min(
-					entity.getCommandSenderWorld().getBlockState(blockPos1).getFriction(entity.getCommandSenderWorld(), blockPos1, entity),
-					entity.getCommandSenderWorld().getBlockState(blockPos2).getFriction(entity.getCommandSenderWorld(), blockPos2, entity)
+					FabricUtil.getFriction(entity.getCommandSenderWorld().getBlockState(blockPos1), entity.getCommandSenderWorld(), blockPos1, entity),
+					FabricUtil.getFriction(entity.getCommandSenderWorld().getBlockState(blockPos2), entity.getCommandSenderWorld(), blockPos2, entity)
 			);
 		} else {
 			BlockPos blockPos = new BlockPos(
@@ -458,7 +459,7 @@ public class WorldUtil {
 					(int) (entity.getZ() + zDirection)
 			);
 			if (!entity.getCommandSenderWorld().isLoaded(blockPos)) return null;
-			slipperiness = entity.getCommandSenderWorld().getBlockState(blockPos).getFriction(entity.getCommandSenderWorld(), blockPos, entity);
+			slipperiness = FabricUtil.getFriction(entity.getCommandSenderWorld().getBlockState(blockPos), entity.getCommandSenderWorld(), blockPos, entity);
 		}
 		return slipperiness <= 0.9 ? new Vec3(xDirection, 0, zDirection) : null;
 	}

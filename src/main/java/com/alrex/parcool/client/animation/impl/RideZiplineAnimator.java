@@ -6,11 +6,11 @@ import com.alrex.parcool.client.animation.PlayerModelTransformer;
 import com.alrex.parcool.common.action.impl.RideZipline;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.utilities.VectorUtil;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.event.RenderFrameEvent;
 import org.joml.Vector3f;
 
 public class RideZiplineAnimator extends Animator {
@@ -60,7 +60,7 @@ public class RideZiplineAnimator extends Animator {
     }
 
     @Override
-    public void onRenderTick(RenderFrameEvent event, Player player, Parkourability parkourability) {
+    public void onRenderTick(DeltaTracker tracker, Player player, Parkourability parkourability) {
         player.yBodyRot = player.getYRot();
         player.yBodyRotO = player.yRotO;
     }

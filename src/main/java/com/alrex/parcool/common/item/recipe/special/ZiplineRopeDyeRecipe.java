@@ -15,7 +15,7 @@ import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 import java.util.LinkedList;
 
 public class ZiplineRopeDyeRecipe extends CustomRecipe {
@@ -25,7 +25,7 @@ public class ZiplineRopeDyeRecipe extends CustomRecipe {
     }
 
     @Override
-    public boolean matches(@Nonnull CraftingInput input, @Nonnull Level level) {
+    public boolean matches(@NotNull CraftingInput input, @NotNull Level level) {
         boolean ziplineRopeFound = false;
         boolean dyeItemFound = false;
         for (int i = 0; i < input.size(); i++) {
@@ -42,9 +42,9 @@ public class ZiplineRopeDyeRecipe extends CustomRecipe {
         return ziplineRopeFound && dyeItemFound;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public ItemStack assemble(@Nonnull CraftingInput input, @Nonnull HolderLookup.Provider provider) {
+    public ItemStack assemble(@NotNull CraftingInput input, @NotNull HolderLookup.Provider provider) {
         ItemStack ziplineRope = null;
         LinkedList<DyeItem> dyeItems = new LinkedList<>();
         for (int i = 0; i < input.size(); i++) {
@@ -88,7 +88,7 @@ public class ZiplineRopeDyeRecipe extends CustomRecipe {
         return width * height >= 2;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RecipeSerializer<?> getSerializer() {
         return Recipes.ZIPLINE_ROPE_DYE.get();

@@ -1,13 +1,12 @@
 package com.alrex.parcool.common.potion;
 
 import com.alrex.parcool.ParCool;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredHolder;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredRegister;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.alchemy.Potion;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class Potions {
     private static final DeferredRegister<Potion> POTIONS = DeferredRegister.create(Registries.POTION, ParCool.MOD_ID);
@@ -28,7 +27,7 @@ public class Potions {
 					)
 			);
 
-	public static void registerAll(IEventBus modBus) {
-		POTIONS.register(modBus);
+	public static void registerAll() {
+		POTIONS.register();
 	}
 }

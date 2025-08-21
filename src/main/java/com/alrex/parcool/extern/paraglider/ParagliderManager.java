@@ -7,10 +7,8 @@ import com.alrex.parcool.common.stamina.handlers.ParCoolStaminaHandler;
 import com.alrex.parcool.extern.ModManager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.NeoForge;
-import tictim.paraglider.api.ParagliderItemCapability;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class ParagliderManager extends ModManager {
 
@@ -21,7 +19,7 @@ public class ParagliderManager extends ModManager {
     @Override
     public void initInClient() {
         if (isInstalled()) {
-            NeoForge.EVENT_BUS.register(EventConsumerForParaglider.class);
+            EventConsumerForParaglider.init();
         }
     }
 
@@ -40,13 +38,13 @@ public class ParagliderManager extends ModManager {
 
     public boolean isFallingWithParaglider(Player player) {
         if (isInstalled()) {
-            for (var item : new ItemStack[]{player.getMainHandItem(), player.getOffhandItem()}) {
+            /*for (var item : new ItemStack[]{player.getMainHandItem(), player.getOffhandItem()}) {
                 var cap = item.getCapability(ParagliderItemCapability.CAPABILITY);
                 if (cap == null) cap = ParagliderItemCapability.defaultImpl();
                 if (cap.isParagliding(item)) {
                     return true;
                 }
-            }
+            }*/
         }
         return false;
     }

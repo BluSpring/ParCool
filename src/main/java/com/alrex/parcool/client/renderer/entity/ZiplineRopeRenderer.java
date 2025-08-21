@@ -16,10 +16,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-
-import javax.annotation.Nonnull;
 
 
 public class ZiplineRopeRenderer extends EntityRenderer<ZiplineRopeEntity> {
@@ -29,9 +28,9 @@ public class ZiplineRopeRenderer extends EntityRenderer<ZiplineRopeEntity> {
         super(p_i46179_1_);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public ResourceLocation getTextureLocation(@Nonnull ZiplineRopeEntity ziplineRopeEntity) {
+    public ResourceLocation getTextureLocation(@NotNull ZiplineRopeEntity ziplineRopeEntity) {
         return TEXTURE_LOCATION;
     }
 
@@ -42,7 +41,7 @@ public class ZiplineRopeRenderer extends EntityRenderer<ZiplineRopeEntity> {
 
 
     @Override
-    public void render(@Nonnull ZiplineRopeEntity entity, float p_225623_2_, float partialTick, @Nonnull PoseStack matrixStack, @Nonnull MultiBufferSource multiBufferSource, int p_225623_6_) {
+    public void render(@NotNull ZiplineRopeEntity entity, float p_225623_2_, float partialTick, @NotNull PoseStack matrixStack, @NotNull MultiBufferSource multiBufferSource, int p_225623_6_) {
         renderRope(entity, partialTick, matrixStack, multiBufferSource);
     }
 

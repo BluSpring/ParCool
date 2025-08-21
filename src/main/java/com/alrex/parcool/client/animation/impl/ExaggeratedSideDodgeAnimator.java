@@ -6,8 +6,8 @@ import com.alrex.parcool.client.animation.PlayerModelTransformer;
 import com.alrex.parcool.common.action.impl.Dodge;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.utilities.Easing;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.client.event.RenderFrameEvent;
 
 public class ExaggeratedSideDodgeAnimator extends Animator {
 	public static final int Dodge_Max_Tick = 14;
@@ -147,7 +147,7 @@ public class ExaggeratedSideDodgeAnimator extends Animator {
     }
 
 	@Override
-    public void onRenderTick(RenderFrameEvent event, Player player, Parkourability parkourability) {
+    public void onRenderTick(DeltaTracker tracker, Player player, Parkourability parkourability) {
 		player.setYBodyRot(player.getYHeadRot());
 	}
 }

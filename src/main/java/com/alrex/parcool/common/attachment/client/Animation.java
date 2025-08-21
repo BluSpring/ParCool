@@ -10,21 +10,20 @@ import com.alrex.parcool.client.animation.PlayerModelTransformer;
 import com.alrex.parcool.common.attachment.ClientAttachments;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.config.ParCoolConfig;
+import io.github.fabricators_of_create.porting_lib.client_events.event.client.ViewportEvent;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.event.RenderFrameEvent;
-import net.neoforged.neoforge.client.event.ViewportEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class Animation {
 
 	public static Animation get(Player player) {
-		return player.getData(ClientAttachments.ANIMATION);
+		return player.getAttachedOrCreate(ClientAttachments.ANIMATION);
 	}
 
 	private Animator animator = null;
@@ -95,14 +94,14 @@ public class Animation {
 		}
         {
             ParCoolAnimationInfoEvent animationEvent = new ParCoolAnimationInfoEvent(player, animator);
-			NeoForge.EVENT_BUS.post(animationEvent);
+            animationEvent.sendEvent();
             option = animationEvent.getOption();
         }
 	}
 
-	public void onRenderTick(RenderFrameEvent event, Player player, Parkourability parkourability) {
+	public void onRenderTick(DeltaTracker tracker, Player player, Parkourability parkourability) {
 		if (animator != null) {
-			animator.onRenderTick(event, player, parkourability);
+			animator.onRenderTick(tracker, player, parkourability);
 		}
 	}
 

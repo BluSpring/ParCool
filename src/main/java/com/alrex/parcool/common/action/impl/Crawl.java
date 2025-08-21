@@ -8,10 +8,11 @@ import com.alrex.parcool.common.action.StaminaConsumeTiming;
 import com.alrex.parcool.common.attachment.client.Animation;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.config.ParCoolConfig;
+import com.alrex.parcool.utilities.fabric.ForcedPoseEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 import java.nio.ByteBuffer;
 
@@ -22,7 +23,7 @@ public class Crawl extends Action {
 
 	public boolean toggleStatus = false;
 
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean canStart(Player player, Parkourability parkourability, ByteBuffer startInfo) {
         Pose pose = player.getPose();
@@ -102,13 +103,13 @@ public class Crawl extends Action {
 	@Override
 	public void onWorkingTick(Player player, Parkourability parkourability) {
 		player.setSprinting(false);
-		if (player.getForcedPose() != Pose.SWIMMING) {
-			player.setForcedPose(Pose.SWIMMING);
+		if (((ForcedPoseEntity) player).parcool$getForcedPose() != Pose.SWIMMING) {
+            ((ForcedPoseEntity) player).parcool$setForcedPose(Pose.SWIMMING);
 		}
 	}
 
 	@Override
 	public void onStop(Player player) {
-		player.setForcedPose(null);
+        ((ForcedPoseEntity) player).parcool$setForcedPose(null);
 	}
 }

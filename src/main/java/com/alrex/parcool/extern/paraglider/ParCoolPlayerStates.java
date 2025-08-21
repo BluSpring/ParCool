@@ -7,14 +7,12 @@ import com.alrex.parcool.common.action.impl.*;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.extern.AdditionalMods;
 import net.minecraft.resources.ResourceLocation;
-import tictim.paraglider.api.movement.ParagliderPlayerStates;
-import tictim.paraglider.api.movement.PlayerStateCondition;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class ParCoolPlayerStates {
+/*public class ParCoolPlayerStates {
     public static final Entry FAST_RUN = new Entry(FastRun.class)
             .parentID(ParagliderPlayerStates.IDLE)
             .priority(3);
@@ -92,4 +90,4 @@ public class ParCoolPlayerStates {
             return new Entry(clazz, stateID, Arrays.stream(value).toList(), staminaDelta, priority, condition);
         }
     }
-}
+}*/

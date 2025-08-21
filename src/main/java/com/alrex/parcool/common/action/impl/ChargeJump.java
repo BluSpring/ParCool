@@ -14,7 +14,6 @@ import com.alrex.parcool.utilities.VectorUtil;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForge;
 
 import java.nio.ByteBuffer;
 
@@ -79,7 +78,7 @@ public class ChargeJump extends Action {
                     && !cp.input.right
                     && !cp.input.left
                     && !parkourability.get(Crawl.class).isDoing()
-                    && !NeoForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStartEvent(player, this)).isCanceled()
+                    && !(new ParCoolActionEvent.TryToStartEvent(player, this)).post()
             ) {
                 if (cp.isShiftKeyDown() && KeyRecorder.keySneak.getPreviousTickNotKeyDown() > 5) {
                     chargeTick++;

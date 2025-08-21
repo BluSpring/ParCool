@@ -5,12 +5,12 @@ import com.alrex.parcool.common.network.payload.StaminaPayload;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 public record ReadonlyStamina(boolean isExhausted, int value, int max) {
     public static ReadonlyStamina createDefault() {
@@ -38,7 +38,7 @@ public record ReadonlyStamina(boolean isExhausted, int value, int max) {
         return new ReadonlyStamina(exhausted, newValue, max());
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public ReadonlyStamina updateMax(LocalPlayer player) {
         var attr = player.getAttribute(Attributes.MAX_STAMINA);
         if (attr == null) return this;
@@ -49,9 +49,9 @@ public record ReadonlyStamina(boolean isExhausted, int value, int max) {
         return new ReadonlyStamina(isExhausted(), value(), newMax);
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public void sync(LocalPlayer player) {
-        PacketDistributor.sendToServer(new StaminaPayload(player.getUUID(), this));
+        ClientPlayNetworking.send(new StaminaPayload(player.getUUID(), this));
     }
 
     public static final Codec<ReadonlyStamina> CODEC = RecordCodecBuilder.create(staminaInstance ->

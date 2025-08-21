@@ -7,10 +7,10 @@ import com.alrex.parcool.common.action.impl.Dodge;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.alrex.parcool.utilities.Easing;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.client.event.RenderFrameEvent;
-import net.neoforged.neoforge.client.event.ViewportEvent;
+import io.github.fabricators_of_create.porting_lib.client_events.event.client.ViewportEvent;
 
 public class DodgeAnimator extends Animator {
 	@Override
@@ -335,7 +335,7 @@ public class DodgeAnimator extends Animator {
 	}
 
 	@Override
-    public void onRenderTick(RenderFrameEvent event, Player player, Parkourability parkourability) {
+    public void onRenderTick(DeltaTracker tracker, Player player, Parkourability parkourability) {
 		switch (direction) {
 			case Right: {
 				player.setYBodyRot(player.getYHeadRot() - 5);

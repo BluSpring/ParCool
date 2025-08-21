@@ -9,19 +9,19 @@ import com.alrex.parcool.common.info.ActionInfo;
 import com.alrex.parcool.common.info.ClientSetting;
 import com.alrex.parcool.common.info.ServerLimitation;
 import com.alrex.parcool.common.network.payload.ClientInformationPayload;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.List;
 
 public class Parkourability {
 	public static Parkourability get(Player player) {
-		return player.getData(Attachments.PARKOURABILITY);
+		return player.getAttachedOrCreate(Attachments.PARKOURABILITY);
 	}
 
     private final ActionInfo info;
@@ -92,13 +92,13 @@ public class Parkourability {
 		return actions.stream().noneMatch(Action::isDoing);
 	}
 
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	public void trySyncLimitation(LocalPlayer player, Parkourability parkourability) {
 		synchronizeTrialCount++;
-		PacketDistributor.sendToServer(new ClientInformationPayload(player.getUUID(), true, parkourability.getClientInfo()));
+		ClientPlayNetworking.send(new ClientInformationPayload(player.getUUID(), true, parkourability.getClientInfo()));
 	}
 
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	public int getSynchronizeTrialCount() {
 		return synchronizeTrialCount;
 	}
@@ -107,7 +107,7 @@ public class Parkourability {
 		synchronizeTrialCount++;
 	}
 
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	public boolean limitationIsNotSynced() {
 		return !getServerLimitation().isSynced();
 	}

@@ -11,7 +11,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
 
 public class LightStaminaHUD {
 	private long lastStaminaChangedTick = 0;
@@ -27,10 +26,10 @@ public class LightStaminaHUD {
     private boolean showStatus = false;
 	private int oldValue = 0;
 
-	public void onTick(ClientTickEvent.Post event, LocalPlayer player) {
+	public void onTick(LocalPlayer player) {
         Parkourability parkourability = Parkourability.get(player);
 		if (parkourability == null) return;
-		var stamina = player.getData(Attachments.STAMINA);
+		var stamina = player.getAttachedOrCreate(Attachments.STAMINA);
 		int newValue = stamina.value();
 		changingSign = (int) Math.signum(newValue - oldValue);
 		final long gameTime = player.getCommandSenderWorld().getGameTime();
@@ -95,7 +94,7 @@ public class LightStaminaHUD {
 		final int width = graphics.guiWidth();
 		final int height = graphics.guiHeight();
         int baseX = width / 2 + 91 + ParCoolConfig.Client.Integers.HorizontalOffsetOfLightStaminaHUD.get();
-		int baseY = height - Minecraft.getInstance().gui.rightHeight + ParCoolConfig.Client.Integers.VerticalOffsetOfLightStaminaHUD.get();
+		int baseY = height /*- Minecraft.getInstance().gui.rightHeight*/ - 39 - 10 + ParCoolConfig.Client.Integers.VerticalOffsetOfLightStaminaHUD.get();
 		for (int i = 0; i < 10; i++) {
 			int x = baseX - i * 8 - 9;
 			int offsetY = 0;
@@ -138,6 +137,6 @@ public class LightStaminaHUD {
 
 			graphics.blit(StaminaHUD.STAMINA, x, baseY + offsetY, textureX, 119, 9, 9, 128, 128);
 		}
-		Minecraft.getInstance().gui.rightHeight += 10;
+		//Minecraft.getInstance().gui.rightHeight += 10;
 	}
 }
