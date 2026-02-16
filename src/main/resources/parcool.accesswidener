@@ -1,0 +1,7 @@
+accessWidener v2 named
+accessible field net/minecraft/client/renderer/RenderStateShard NO_TEXTURE Lnet/minecraft/client/renderer/RenderStateShard$EmptyTextureStateShard; # NO_TEXTURE
+accessible field net/minecraft/client/renderer/RenderStateShard LIGHTMAP Lnet/minecraft/client/renderer/RenderStateShard$LightmapStateShard; # LIGHTMAP
+accessible field net/minecraft/world/entity/Entity onGround Z # onGround
+mutable field net/minecraft/world/entity/Entity onGround Z # onGround
+accessible method net/minecraft/world/entity/player/Player canPlayerFitWithinBlocksAndEntitiesWhen (Lnet/minecraft/world/entity/Pose;)Z # canPlayerFitWithinBlocksAndEntitiesWhen
+accessible method net/minecraft/world/level/storage/LevelResource <init> (Ljava/lang/String;)V

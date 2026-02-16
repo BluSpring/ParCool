@@ -3,28 +3,28 @@ package com.alrex.parcool.common.attachment;
 import com.alrex.parcool.ParCool;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.common.attachment.common.ReadonlyStamina;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 
 import java.util.function.Supplier;
 
 public class Attachments {
-    private static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, ParCool.MOD_ID);
-    public static final Supplier<AttachmentType<ReadonlyStamina>> STAMINA = ATTACHMENT_TYPES.register(
-            "stamina",
-            () -> AttachmentType
-                    .builder(ReadonlyStamina::createDefault)
-                    .serialize(ReadonlyStamina.CODEC)
-                    .build()
+    public static final Supplier<AttachmentType<ReadonlyStamina>> STAMINA = register(
+            AttachmentRegistry.create(ParCool.id("stamina"), builder -> builder
+                    .initializer(ReadonlyStamina::createDefault)
+                    .persistent(ReadonlyStamina.CODEC.codec())
+            )
     );
-    public static final Supplier<AttachmentType<Parkourability>> PARKOURABILITY = ATTACHMENT_TYPES.register(
-            "parkourability",
-            () -> AttachmentType.builder(Parkourability::new).build()
+    public static final Supplier<AttachmentType<Parkourability>> PARKOURABILITY = register(
+            AttachmentRegistry.create(ParCool.id("parkourability"),
+                builder -> builder.initializer(Parkourability::new)
+            )
     );
 
-    public static void registerAll(IEventBus bus) {
-        ATTACHMENT_TYPES.register(bus);
+    private static <A> Supplier<AttachmentType<A>> register(AttachmentType<A> type) {
+        return () -> type;
+    }
+
+    public static void registerAll() {
     }
 }

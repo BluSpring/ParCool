@@ -3,13 +3,13 @@ package com.alrex.parcool.client.animation.impl;
 import com.alrex.parcool.client.animation.Animator;
 import com.alrex.parcool.client.animation.PlayerModelRotator;
 import com.alrex.parcool.client.animation.PlayerModelTransformer;
+import com.alrex.parcool.client.fabric.CameraAngles;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.alrex.parcool.utilities.EasingFunctions;
 import com.alrex.parcool.utilities.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.client.event.ViewportEvent;
 
 public class BackwardWallJumpAnimator extends Animator {
 	private final int maxTick = 12;
@@ -111,7 +111,7 @@ public class BackwardWallJumpAnimator extends Animator {
 	}
 
 	@Override
-	public void onCameraSetUp(ViewportEvent.ComputeCameraAngles event, Player clientPlayer, Parkourability parkourability) {
+	public void onCameraSetUp(CameraAngles event, Player clientPlayer, Parkourability parkourability) {
 		if (!(clientPlayer.isLocalPlayer() &&
 				Minecraft.getInstance().options.getCameraType().isFirstPerson() &&
 				ParCoolConfig.Client.Booleans.EnableCameraAnimationOfBackWallJump.get()

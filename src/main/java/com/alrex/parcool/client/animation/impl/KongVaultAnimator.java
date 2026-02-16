@@ -3,6 +3,7 @@ package com.alrex.parcool.client.animation.impl;
 import com.alrex.parcool.client.animation.Animator;
 import com.alrex.parcool.client.animation.PlayerModelRotator;
 import com.alrex.parcool.client.animation.PlayerModelTransformer;
+import com.alrex.parcool.client.fabric.CameraAngles;
 import com.alrex.parcool.common.action.impl.Vault;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.config.ParCoolConfig;
@@ -13,7 +14,6 @@ import com.alrex.parcool.utilities.VectorUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.event.ViewportEvent;
 
 import static java.lang.Math.toRadians;
 
@@ -120,7 +120,7 @@ public class KongVaultAnimator extends Animator {
     }
 
 	@Override
-	public void onCameraSetUp(ViewportEvent.ComputeCameraAngles event, Player clientPlayer, Parkourability parkourability) {
+	public void onCameraSetUp(CameraAngles event, Player clientPlayer, Parkourability parkourability) {
 		if (!Minecraft.getInstance().options.getCameraType().isFirstPerson() ||
 				!ParCoolConfig.Client.Booleans.EnableCameraAnimationOfVault.get()
 		) return;

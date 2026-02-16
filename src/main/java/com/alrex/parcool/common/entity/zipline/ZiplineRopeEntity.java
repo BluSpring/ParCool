@@ -23,7 +23,7 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class ZiplineRopeEntity extends net.minecraft.world.entity.Entity {
     private static final EntityDataAccessor<BlockPos> DATA_START_POS;
@@ -118,9 +118,9 @@ public class ZiplineRopeEntity extends net.minecraft.world.entity.Entity {
         return distanceSqr < Zipline.MAXIMUM_HORIZONTAL_DISTANCE * Zipline.MAXIMUM_HORIZONTAL_DISTANCE;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public EntityDimensions getDimensions(@Nonnull Pose p_213305_1_) {
+    public EntityDimensions getDimensions(@NotNull Pose p_213305_1_) {
         if (size == null) {
             return EntityDimensions.fixed(0.1f, 0.1f);
         }
@@ -146,7 +146,7 @@ public class ZiplineRopeEntity extends net.minecraft.world.entity.Entity {
     }
 
     @Override
-    public void onSyncedDataUpdated(@Nonnull EntityDataAccessor<?> param) {
+    public void onSyncedDataUpdated(@NotNull EntityDataAccessor<?> param) {
         if (param.equals(DATA_START_POS) || param.equals(DATA_END_POS)) {
             refreshDimensions();
         }
@@ -199,13 +199,13 @@ public class ZiplineRopeEntity extends net.minecraft.world.entity.Entity {
     }
 
     @Override
-    public void readAdditionalSaveData(@Nonnull ValueInput input) {
+    public void readAdditionalSaveData(@NotNull ValueInput input) {
         setStartPos(new BlockPos(input.getIntOr("Tile1_X", 0), input.getIntOr("Tile1_Y", 0), input.getIntOr("Tile1_Z", 0)));
         setEndPos(new BlockPos(input.getIntOr("Tile2_X", 0), input.getIntOr("Tile2_Y", 0), input.getIntOr("Tile2_Z", 0)));
     }
 
     @Override
-    public void addAdditionalSaveData(@Nonnull ValueOutput output) {
+    public void addAdditionalSaveData(@NotNull ValueOutput output) {
         BlockPos startPos = getStartPos();
         BlockPos endPos = getEndPos();
         output.putInt("Tile1_X", startPos.getX());

@@ -19,7 +19,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.nio.ByteBuffer;
 
 public class RideZipline extends Action {
@@ -86,7 +86,7 @@ public class RideZipline extends Action {
         return KeyBindings.getKeyRideZipline().isDown()
                 && !KeyRecorder.keyJumpState.isPressed()
                 && !player.isInWall()
-                && !player.getData(Attachments.STAMINA).isExhausted()
+                && !player.getAttachedOrCreate(Attachments.STAMINA.get()).isExhausted()
                 && ridingZipline != null
                 && ridingZipline.isAlive()
                 && 0 <= currentT && currentT <= 1;

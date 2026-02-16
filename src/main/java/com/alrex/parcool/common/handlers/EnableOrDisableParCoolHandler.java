@@ -6,30 +6,31 @@ import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.common.info.ClientSetting;
 import com.alrex.parcool.common.network.payload.ClientInformationPayload;
 import com.alrex.parcool.config.ParCoolConfig;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class EnableOrDisableParCoolHandler {
-    @SubscribeEvent
-    public static void onTick(ClientTickEvent.Post event) {
+    public static void init() {
+        ClientTickEvents.END_CLIENT_TICK.register(EnableOrDisableParCoolHandler::onTick);
+    }
+
+    public static void onTick(Minecraft client) {
 
         if (KeyBindings.getKeyBindEnable().consumeClick()) {
             boolean currentStatus = !ParCoolConfig.Client.Booleans.ParCoolIsActive.get();
             ParCoolConfig.Client.Booleans.ParCoolIsActive.set(currentStatus);
-            LocalPlayer player = Minecraft.getInstance().player;
+            LocalPlayer player = client.player;
             if (player == null) return;
             Parkourability parkourability = Parkourability.get(player);
             if (parkourability == null) return;
             parkourability.getActionInfo().setClientSetting(ClientSetting.readFromLocalConfig());
-            ClientPacketDistributor.sendToServer(new ClientInformationPayload(player.getUUID(), false, parkourability.getClientInfo()));
+            ClientPlayNetworking.send(new ClientInformationPayload(player.getUUID(), false, parkourability.getClientInfo()));
             player.displayClientMessage(Component.translatable(currentStatus ? "parcool.message.enabled" : "parcool.message.disabled"), true);
             if (currentStatus) {
                 player.playSound(SoundEvents.PARCOOL_ENABLE.get(), 1.0f, 1.0f);

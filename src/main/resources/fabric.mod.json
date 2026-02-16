@@ -1,0 +1,39 @@
+{
+    "schemaVersion": 1,
+    "id": "parcool",
+    "version": "${mod_version}",
+    "name": "ParCool!",
+    "description": "This enable us act like parkour players.\nEnjoy Minecraft with cool actions!\nIf Patchouli mod is installed, let's read ParCool Guide!",
+    "authors": [
+        "alRex_U",
+        "BluSpring"
+    ],
+    "contact": {
+        "sources": "https://github.com/BluSpring/ParCool"
+    },
+    "license": "${mod_license}",
+    "icon": "parcool_logo.png",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "com.alrex.parcool.ParCool"
+        ],
+        "client": [
+            "com.alrex.parcool.client.ParCoolClient"
+        ]
+    },
+    "mixins": [
+        "parcool.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": ">=${fabric_loader_version}",
+        "minecraft": "${minecraft_version_range}",
+        "fabric-api": "*",
+        "forgeconfigapiport": ">=${forgeconfigapiport_version}"
+    },
+    "suggests": {
+        "shouldersurfing": ">=4.11.0",
+        "betterthirdperson": ">=1.9.0"
+    },
+    "accessWidener": "parcool.accesswidener"
+}

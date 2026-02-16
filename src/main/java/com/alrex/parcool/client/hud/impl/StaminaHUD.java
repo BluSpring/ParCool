@@ -9,17 +9,17 @@ import com.alrex.parcool.common.attachment.common.ReadonlyStamina;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.alrex.parcool.utilities.MathUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class StaminaHUD {
 	public static final ResourceLocation STAMINA_CHARGING = ResourceLocation.fromNamespaceAndPath(ParCool.MOD_ID, "hud/large_stamina/stamina_bar_charging");
 	public static final ResourceLocation STAMINA_DEPLETED = ResourceLocation.fromNamespaceAndPath(ParCool.MOD_ID, "hud/large_stamina/stamina_bar_depleted");
@@ -42,7 +42,7 @@ public class StaminaHUD {
     private float oldStatusValue = 0f;
     private boolean showStatus = false;
 
-	public void onTick(ClientTickEvent.Post event, LocalPlayer player) {
+	public void onTick(Minecraft client, LocalPlayer player) {
         Parkourability parkourability = Parkourability.get(player);
 		if (++renderGageTick >= 5) {
 			renderGageTick = 0;

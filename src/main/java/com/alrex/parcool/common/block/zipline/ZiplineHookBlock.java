@@ -31,14 +31,14 @@ import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public abstract class ZiplineHookBlock extends DirectionalBlock implements EntityBlock {
 
     public ZiplineHookBlock(Properties p_i48440_1_) {
-        super(p_i48440_1_);
+        super(p_i48440_1_.pushReaction(PushReaction.DESTROY));
         registerDefaultState(defaultBlockState().setValue(FACING, Direction.UP));
     }
 
@@ -52,18 +52,13 @@ public abstract class ZiplineHookBlock extends DirectionalBlock implements Entit
     }
 
     @Override
-    public PushReaction getPistonPushReaction(BlockState p_149656_1_) {
-        return PushReaction.DESTROY;
-    }
-
-    @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         Direction direction = context.getClickedFace();
         return this.defaultBlockState().setValue(FACING, direction);
     }
 
     @Override
-    public void affectNeighborsAfterRemoval(@Nonnull BlockState state, @Nonnull ServerLevel world, @Nonnull BlockPos pos, boolean movedByPiston) {
+    public void affectNeighborsAfterRemoval(@NotNull BlockState state, @NotNull ServerLevel world, @NotNull BlockPos pos, boolean movedByPiston) {
         if (!world.isClientSide()) {
             var tileEntity = world.getBlockEntity(pos);
             if (tileEntity instanceof ZiplineHookTileEntity) {
@@ -97,9 +92,9 @@ public abstract class ZiplineHookBlock extends DirectionalBlock implements Entit
     }
 
 
-    @Nonnull
+    @NotNull
     @Override
-    protected InteractionResult useItemOn(ItemStack stack, @Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos pos, @Nonnull Player player, @Nonnull InteractionHand hand, @Nonnull BlockHitResult hitResult) {
+    protected InteractionResult useItemOn(ItemStack stack, @NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hitResult) {
         if (stack.getItem() instanceof ShearsItem) {
             var tileEntity = player.level().getBlockEntity(pos);
             if (tileEntity instanceof ZiplineHookTileEntity ziplineHookTileEntity) {
@@ -129,13 +124,13 @@ public abstract class ZiplineHookBlock extends DirectionalBlock implements Entit
 
     @Nullable
     @Override
-    public BlockEntity newBlockEntity(@Nonnull BlockPos blockPos, @Nonnull BlockState blockState) {
+    public BlockEntity newBlockEntity(@NotNull BlockPos blockPos, @NotNull BlockState blockState) {
         return new ZiplineHookTileEntity(TileEntities.ZIPLINE_HOOK.get(), blockPos, blockState);
     }
 
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(@Nonnull Level level, @Nonnull BlockState state, @Nonnull BlockEntityType<T> type) {
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(@NotNull Level level, @NotNull BlockState state, @NotNull BlockEntityType<T> type) {
         return type == TileEntities.ZIPLINE_HOOK.get() ? ZiplineHookTileEntity::tick : null;
     }
 }

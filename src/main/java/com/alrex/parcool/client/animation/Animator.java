@@ -1,9 +1,8 @@
 package com.alrex.parcool.client.animation;
 
+import com.alrex.parcool.client.fabric.CameraAngles;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.client.event.RenderFrameEvent;
-import net.neoforged.neoforge.client.event.ViewportEvent;
 
 public abstract class Animator {
 	private int tick = 0;
@@ -56,14 +55,13 @@ public abstract class Animator {
 	}
 
 	public void onCameraSetUp(
-			ViewportEvent.ComputeCameraAngles event,
+			CameraAngles event,
 			Player clientPlayer,
 			Parkourability parkourability
 	) {
 	}
 
 	public void onRenderTick(
-            RenderFrameEvent event,
 			Player player,
 			Parkourability parkourability
 	) {

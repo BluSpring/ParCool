@@ -1,17 +1,19 @@
 package com.alrex.parcool.common.handlers;
 
 import com.alrex.parcool.common.attachment.common.Parkourability;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 public class PlayerCloneHandler {
-	@SubscribeEvent
-	public static void onClone(PlayerEvent.Clone event) {
-        Player player = event.getEntity();
-        if (event.isWasDeath() && player instanceof ServerPlayer) {
-			Player from = event.getOriginal();
+	public static void init() {
+		ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
+			onClone(oldPlayer, newPlayer, !alive);
+		});
+	}
+
+	public static void onClone(Player from, Player player, boolean wasDeath) {
+        if (wasDeath && player instanceof ServerPlayer) {
 			Parkourability pFrom = Parkourability.get(from);
             Parkourability pTo = Parkourability.get(player);
 			if (pFrom != null && pTo != null) {

@@ -6,14 +6,13 @@ import com.alrex.parcool.common.info.ActionInfo;
 import com.alrex.parcool.common.info.ClientSetting;
 import com.alrex.parcool.common.network.payload.ClientInformationPayload;
 import com.alrex.parcool.config.ParCoolConfig;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.common.ModConfigSpec;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.List;
 
@@ -107,7 +106,7 @@ public class SettingEnumConfigScreen extends ParCoolSettingScreen {
         Parkourability parkourability = Parkourability.get(player);
         parkourability.getActionInfo().setClientSetting(ClientSetting.readFromLocalConfig());
         parkourability.getActionInfo().updateStaminaType(LocalStamina.get(player), player);
-        ClientPacketDistributor.sendToServer(new ClientInformationPayload(player.getUUID(), true, parkourability.getClientInfo()));
+        ClientPlayNetworking.send(new ClientInformationPayload(player.getUUID(), true, parkourability.getClientInfo()));
     }
 
     private static class EnumConfigSet<T extends Enum<T>> {

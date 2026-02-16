@@ -4,18 +4,20 @@ import com.alrex.parcool.client.gui.SettingActionLimitationScreen;
 import com.alrex.parcool.client.input.KeyRecorder;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.config.ParCoolConfig;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class OpenSettingsParCoolHandler {
-	@SubscribeEvent
-    public static void onTick(ClientTickEvent.Pre event) {
+	public static void init() {
+		ClientTickEvents.START_CLIENT_TICK.register(client -> onTick());
+	}
+
+    public static void onTick() {
 
 		if (KeyRecorder.keyOpenSettingsState.isPressed()) {
 			LocalPlayer player = Minecraft.getInstance().player;

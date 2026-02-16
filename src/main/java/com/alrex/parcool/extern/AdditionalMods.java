@@ -4,9 +4,8 @@ import com.alrex.parcool.common.attachment.client.LocalStamina;
 import com.alrex.parcool.extern.betterthirdperson.BetterThirdPersonManager;
 import com.alrex.parcool.extern.shouldersurfing.ShoulderSurfingManager;
 import net.minecraft.client.Minecraft;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.common.NeoForge;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 import java.util.Arrays;
 import java.util.function.Supplier;
@@ -37,7 +36,7 @@ public enum AdditionalMods {
     }
 
     public static void initInClient() {
-        NeoForge.EVENT_BUS.register(AdditionalModsEventConsumer.Client.class);
+        AdditionalModsEventConsumer.Client.init();
         Arrays.stream(values()).map(AdditionalMods::get).forEach(ModManager::initInClient);
     }
 
@@ -45,12 +44,12 @@ public enum AdditionalMods {
         Arrays.stream(values()).map(AdditionalMods::get).forEach(ModManager::initInDedicatedServer);
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public static boolean isCameraDecoupled() {
         return shoulderSurfing().isCameraDecoupled() || betterThirdPerson().isCameraDecoupled();
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public static boolean isUsingExternalStamina() {
         var player = Minecraft.getInstance().player;
         if (player == null) return false;

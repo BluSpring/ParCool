@@ -3,14 +3,16 @@ package com.alrex.parcool.common.network.payload;
 import com.alrex.parcool.ParCool;
 import com.alrex.parcool.common.stamina.StaminaType;
 import io.netty.buffer.ByteBuf;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public record StaminaProcessOnServerPayload(StaminaType stamina, int value) implements CustomPacketPayload {
     public static final Type<StaminaProcessOnServerPayload> TYPE
@@ -23,18 +25,19 @@ public record StaminaProcessOnServerPayload(StaminaType stamina, int value) impl
             StaminaProcessOnServerPayload::new
     );
 
-    @Nonnull
+    @NotNull
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
 
-    public static void handleClient(StaminaProcessOnServerPayload payload, IPayloadContext context) {
+    @Environment(EnvType.CLIENT)
+    public static void handleClient(StaminaProcessOnServerPayload payload, ClientPlayNetworking.Context context) {
         throw new UnsupportedOperationException("This should have been designed not to be called");
     }
 
-    public static void handleServer(StaminaProcessOnServerPayload payload, IPayloadContext context) {
-        context.enqueueWork(() -> {
+    public static void handleServer(StaminaProcessOnServerPayload payload, ServerPlayNetworking.Context context) {
+        context.server().execute(() -> {
             Player player = context.player();
             payload.stamina().newHandler(player).processOnServer(player, payload.value());
         });

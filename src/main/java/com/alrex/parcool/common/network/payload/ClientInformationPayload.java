@@ -5,6 +5,11 @@ import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.common.info.ClientSetting;
 import com.alrex.parcool.server.limitation.Limitations;
 import io.netty.buffer.ByteBuf;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -12,10 +17,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.UUID;
 
 public record ClientInformationPayload(UUID playerID, boolean requestLimitation,
@@ -34,15 +37,17 @@ public record ClientInformationPayload(UUID playerID, boolean requestLimitation,
             (ms, ls, r, i) -> new ClientInformationPayload(new UUID(ms, ls), r, i)
     );
 
-    @Nonnull
+    @NotNull
     @Override
     public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
 
-    public static void handleClient(ClientInformationPayload payload, IPayloadContext context) {
-        context.enqueueWork(() -> {
-            Level world = context.player().level();
+    @Environment(EnvType.CLIENT)
+    public static void handleClient(ClientInformationPayload payload, ClientPlayNetworking.Context context) {
+        Level world = context.player().level();
+
+        context.client().execute(() -> {
             var player = world.getPlayerByUUID(payload.playerID());
             if (player == null || player.isLocalPlayer()) return;
             Parkourability parkourability = Parkourability.get(player);
@@ -51,10 +56,10 @@ public record ClientInformationPayload(UUID playerID, boolean requestLimitation,
         });
     }
 
-    public static void handleServer(ClientInformationPayload payload, IPayloadContext context) {
-        context.enqueueWork(() -> {
+    public static void handleServer(ClientInformationPayload payload, ServerPlayNetworking.Context context) {
+        context.server().execute(() -> {
             Player player = context.player();
-            PacketDistributor.sendToAllPlayers(payload);
+            PlayerLookup.all(context.server()).forEach(p -> ServerPlayNetworking.send(p, payload));
 
             Parkourability parkourability = Parkourability.get(player);
             if (parkourability == null) return;

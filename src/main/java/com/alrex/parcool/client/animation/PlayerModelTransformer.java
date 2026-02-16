@@ -3,6 +3,7 @@ package com.alrex.parcool.client.animation;
 import com.alrex.parcool.api.unstable.animation.AnimationOption;
 import com.alrex.parcool.api.unstable.animation.AnimationPart;
 import com.alrex.parcool.utilities.MathUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.AnimationUtils;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
@@ -26,7 +27,7 @@ public class PlayerModelTransformer {
     private AnimationOption option = new AnimationOption();
 
 	public float getPartialTick() {
-		return state.partialTick;
+		return Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true);
 	}
 
 	public HumanoidModel.ArmPose getArmPose(HumanoidArm arm) {

@@ -18,7 +18,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 
 public class ZiplineRopeRenderer extends EntityRenderer<ZiplineRopeEntity, ZiplineRopeRenderState> {
@@ -32,14 +32,14 @@ public class ZiplineRopeRenderer extends EntityRenderer<ZiplineRopeEntity, Zipli
         return entity.shouldRender(x, y, z);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ZiplineRopeRenderState createRenderState() {
         return new ZiplineRopeRenderState();
     }
 
     @Override
-    public void extractRenderState(@Nonnull ZiplineRopeEntity entity, @Nonnull ZiplineRopeRenderState state, float partialTick) {
+    public void extractRenderState(@NotNull ZiplineRopeEntity entity, @NotNull ZiplineRopeRenderState state, float partialTick) {
         super.extractRenderState(entity, state, partialTick);
         state.color = entity.getColor();
         state.startPos = entity.getStartPos();
@@ -53,7 +53,7 @@ public class ZiplineRopeRenderer extends EntityRenderer<ZiplineRopeEntity, Zipli
     }
 
     @Override
-    public void render(@Nonnull ZiplineRopeRenderState renderState, @Nonnull PoseStack poseStack, @Nonnull MultiBufferSource bufferSource, int packedLight) {
+    public void render(@NotNull ZiplineRopeRenderState renderState, @NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferSource, int packedLight) {
         renderRope(renderState, poseStack, bufferSource, packedLight);
     }
 

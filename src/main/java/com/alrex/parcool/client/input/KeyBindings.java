@@ -2,22 +2,19 @@ package com.alrex.parcool.client.input;
 
 import com.alrex.parcool.utilities.VectorUtil;
 import com.mojang.blaze3d.platform.InputConstants;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.client.settings.KeyConflictContext;
-import net.neoforged.neoforge.client.settings.KeyModifier;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import org.lwjgl.glfw.GLFW;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class KeyBindings {
     private static final Minecraft mc = Minecraft.getInstance();
-    private static final KeyMapping keyBindEnable = new KeyMapping("key.parcool.Enable", KeyConflictContext.UNIVERSAL, KeyModifier.CONTROL, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_P, "key.categories.parcool");
+    private static final KeyMapping keyBindEnable = new KeyMapping("key.parcool.Enable", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_P, "key.categories.parcool");
 	private static final KeyMapping keyBindCrawl = new KeyMapping("key.parcool.Crawl", GLFW.GLFW_KEY_C, "key.categories.parcool");
 	private static final KeyMapping keyBindGrabWall = new KeyMapping("key.parcool.ClingToCliff", InputConstants.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_RIGHT, "key.categories.parcool");
 	private static final KeyMapping keyBindBreakfall = new KeyMapping("key.parcool.Breakfall", GLFW.GLFW_KEY_R, "key.categories.parcool");
@@ -32,7 +29,7 @@ public class KeyBindings {
     private static final KeyMapping keyBindHideInBlock = new KeyMapping("key.parcool.HideInBlock", GLFW.GLFW_KEY_C, "key.categories.parcool");
 	private static final KeyMapping keyBindHorizontalWallRun = new KeyMapping("key.parcool.HorizontalWallRun", GLFW.GLFW_KEY_R, "key.categories.parcool");
 	private static final KeyMapping keyBindQuickTurn = new KeyMapping("key.parcool.QuickTurn", GLFW.GLFW_KEY_UNKNOWN, "key.categories.parcool");
-	private static final KeyMapping keyBindOpenSettings = new KeyMapping("key.parcool.openSetting", KeyConflictContext.UNIVERSAL, KeyModifier.ALT, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_P, "key.categories.parcool");
+	private static final KeyMapping keyBindOpenSettings = new KeyMapping("key.parcool.openSetting", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_P, "key.categories.parcool");
 	private static final Vec3 forwardVector = new Vec3(0, 0, 1);
 
 	public static KeyMapping getKeySprint() {
@@ -156,24 +153,23 @@ public class KeyBindings {
 	public static KeyMapping getKeyFlipping() {
 		return keyBindFlipping;
 	}
-
-	@SubscribeEvent
-	public static void register(RegisterKeyMappingsEvent event) {
-        event.register(keyBindEnable);
-		event.register(keyBindCrawl);
-		event.register(keyBindGrabWall);
-		event.register(keyBindBreakfall);
-		event.register(keyBindFastRunning);
-		event.register(keyBindDodge);
-        event.register(keyBindRideZipline);
-		event.register(keyBindWallSlide);
-		event.register(keyBindWallJump);
-		event.register(keyBindVault);
-		event.register(keyBindHorizontalWallRun);
-        event.register(keyBindHideInBlock);
-		event.register(keyBindOpenSettings);
-		event.register(keyBindQuickTurn);
-		event.register(keyBindFlipping);
-		event.register(keyBindHangDown);
+	
+	public static void register() {
+        KeyBindingHelper.registerKeyBinding(keyBindEnable);
+		KeyBindingHelper.registerKeyBinding(keyBindCrawl);
+		KeyBindingHelper.registerKeyBinding(keyBindGrabWall);
+		KeyBindingHelper.registerKeyBinding(keyBindBreakfall);
+		KeyBindingHelper.registerKeyBinding(keyBindFastRunning);
+		KeyBindingHelper.registerKeyBinding(keyBindDodge);
+        KeyBindingHelper.registerKeyBinding(keyBindRideZipline);
+		KeyBindingHelper.registerKeyBinding(keyBindWallSlide);
+		KeyBindingHelper.registerKeyBinding(keyBindWallJump);
+		KeyBindingHelper.registerKeyBinding(keyBindVault);
+		KeyBindingHelper.registerKeyBinding(keyBindHorizontalWallRun);
+        KeyBindingHelper.registerKeyBinding(keyBindHideInBlock);
+		KeyBindingHelper.registerKeyBinding(keyBindOpenSettings);
+		KeyBindingHelper.registerKeyBinding(keyBindQuickTurn);
+		KeyBindingHelper.registerKeyBinding(keyBindFlipping);
+		KeyBindingHelper.registerKeyBinding(keyBindHangDown);
 	}
 }

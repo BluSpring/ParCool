@@ -15,8 +15,8 @@ import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.level.block.state.properties.WallSide;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -448,8 +448,8 @@ public class WorldUtil {
 			if (!entity.level().isLoaded(blockPos1)) return null;
 			if (!entity.level().isLoaded(blockPos2)) return null;
 			slipperiness = Math.min(
-					entity.level().getBlockState(blockPos1).getFriction(entity.level(), blockPos1, entity),
-					entity.level().getBlockState(blockPos2).getFriction(entity.level(), blockPos2, entity)
+					entity.level().getBlockState(blockPos1).getBlock().getFriction(),
+					entity.level().getBlockState(blockPos2).getBlock().getFriction()
 			);
 		} else {
 			double blockX = entity.getX() + xDirection, blockZ = entity.getZ() + zDirection;
@@ -471,7 +471,7 @@ public class WorldUtil {
                         Mth.floor(blockZ)
 				);
 			}
-			slipperiness = entity.level().getBlockState(blockPos).getFriction(entity.level(), blockPos, entity);
+			slipperiness = entity.level().getBlockState(blockPos).getBlock().getFriction();
 		}
 		return slipperiness <= 0.9 ? new Vec3(xDirection, 0, zDirection) : null;
 	}

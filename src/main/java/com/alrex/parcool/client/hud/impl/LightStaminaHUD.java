@@ -16,7 +16,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
 
 public class LightStaminaHUD {
 	public static final ResourceLocation STAMINA_CHARGED_MAX = ResourceLocation.fromNamespaceAndPath(ParCool.MOD_ID, "hud/stamina_charged_max");
@@ -64,10 +63,10 @@ public class LightStaminaHUD {
     private boolean showStatus = false;
 	private int oldValue = 0;
 
-	public void onTick(ClientTickEvent.Post event, LocalPlayer player) {
+	public void onTick(Minecraft client, LocalPlayer player) {
         Parkourability parkourability = Parkourability.get(player);
 		if (parkourability == null) return;
-		var stamina = player.getData(Attachments.STAMINA);
+		var stamina = player.getAttachedOrCreate(Attachments.STAMINA.get());
 		int newValue = stamina.value();
 		changingSign = (int) Math.signum(newValue - oldValue);
 		final long gameTime = player.level().getGameTime();
@@ -131,7 +130,7 @@ public class LightStaminaHUD {
 		final int width = graphics.guiWidth();
 		final int height = graphics.guiHeight();
         int baseX = width / 2 + 91 + ParCoolConfig.Client.Integers.HorizontalOffsetOfLightStaminaHUD.get();
-		int baseY = height - Minecraft.getInstance().gui.rightHeight + ParCoolConfig.Client.Integers.VerticalOffsetOfLightStaminaHUD.get();
+		int baseY = height - /*Minecraft.getInstance().gui.rightHeight*/ (39 + 10 + (player.getArmorValue() > 0 ? 10 : 0) + (player.isUnderWater() ? 10 : 0)) + ParCoolConfig.Client.Integers.VerticalOffsetOfLightStaminaHUD.get();
 		for (int i = 0; i < 10; i++) {
 			int x = baseX - i * 8 - 9;
 			int offsetY = 0;
@@ -177,6 +176,6 @@ public class LightStaminaHUD {
 
 			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, type.getTexture(size), 9, 9, 0, 0, x, baseY + offsetY, 9, 9);
 		}
-		Minecraft.getInstance().gui.rightHeight += 10;
+//		Minecraft.getInstance().gui.rightHeight += 10;
 	}
 }

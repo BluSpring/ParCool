@@ -15,7 +15,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class IronZiplineHookBlock extends ZiplineHookBlock {
     public static final BooleanProperty ORTHOGONAL = BlockStateProperties.ORTHOGONAL;
@@ -43,13 +43,13 @@ public class IronZiplineHookBlock extends ZiplineHookBlock {
     }
 
     @Override
-    public VoxelShape getShape(@Nonnull BlockState state, @Nonnull BlockGetter getter, @Nonnull BlockPos pos, @Nonnull CollisionContext context) {
+    public VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter getter, @NotNull BlockPos pos, @NotNull CollisionContext context) {
         return SHAPES[state.getValue(FACING).ordinal()];
     }
 
     private static final MapCodec<IronZiplineHookBlock> CODEC = simpleCodec(IronZiplineHookBlock::new);
 
-    @Nonnull
+    @NotNull
     @Override
     protected MapCodec<? extends DirectionalBlock> codec() {
         return CODEC;

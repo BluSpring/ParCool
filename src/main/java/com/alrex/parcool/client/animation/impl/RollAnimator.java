@@ -3,6 +3,7 @@ package com.alrex.parcool.client.animation.impl;
 import com.alrex.parcool.client.animation.Animator;
 import com.alrex.parcool.client.animation.PlayerModelRotator;
 import com.alrex.parcool.client.animation.PlayerModelTransformer;
+import com.alrex.parcool.client.fabric.CameraAngles;
 import com.alrex.parcool.common.action.impl.Roll;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.config.ParCoolConfig;
@@ -10,8 +11,6 @@ import com.alrex.parcool.utilities.Easing;
 import com.alrex.parcool.utilities.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.client.event.RenderFrameEvent;
-import net.neoforged.neoforge.client.event.ViewportEvent;
 
 public class RollAnimator extends Animator {
 	private final Roll.Direction direction;
@@ -284,7 +283,7 @@ public class RollAnimator extends Animator {
 	}
 
 	@Override
-	public void onCameraSetUp(ViewportEvent.ComputeCameraAngles event, Player clientPlayer, Parkourability parkourability) {
+	public void onCameraSetUp(CameraAngles event, Player clientPlayer, Parkourability parkourability) {
 		switch (direction) {
 			case Front:
 			case Back: {
@@ -299,7 +298,7 @@ public class RollAnimator extends Animator {
 		}
 	}
 
-	void onCameraSetUpFrontBack(ViewportEvent.ComputeCameraAngles event, Player clientPlayer, Parkourability parkourability) {
+	void onCameraSetUpFrontBack(CameraAngles event, Player clientPlayer, Parkourability parkourability) {
 		Roll roll = parkourability.get(Roll.class);
 		float sign = direction == Roll.Direction.Front ? 1 : -1;
 		if (roll.isDoing() &&
@@ -312,7 +311,7 @@ public class RollAnimator extends Animator {
 		}
 	}
 
-	void onCameraSetUpLeftRight(ViewportEvent.ComputeCameraAngles event, Player clientPlayer, Parkourability parkourability) {
+	void onCameraSetUpLeftRight(CameraAngles event, Player clientPlayer, Parkourability parkourability) {
 		float phase = (float) ((getTick() + event.getPartialTick()) / parkourability.get(Roll.class).getRollMaxTick());
 		if (phase > 1) {
 			return;
@@ -333,7 +332,7 @@ public class RollAnimator extends Animator {
 	}
 
 	@Override
-	public void onRenderTick(RenderFrameEvent event, Player player, Parkourability parkourability) {
+	public void onRenderTick(Player player, Parkourability parkourability) {
 		switch (direction) {
 			case Right: {
 				player.setYBodyRot(player.getYHeadRot() - 5);

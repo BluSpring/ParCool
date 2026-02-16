@@ -4,15 +4,19 @@ import com.alrex.parcool.ParCool;
 import com.alrex.parcool.common.attachment.Attachments;
 import com.alrex.parcool.common.attachment.common.ReadonlyStamina;
 import io.netty.buffer.ByteBuf;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.UUID;
 
 public record StaminaPayload(UUID playerID, ReadonlyStamina stamina) implements CustomPacketPayload {
@@ -28,26 +32,28 @@ public record StaminaPayload(UUID playerID, ReadonlyStamina stamina) implements 
             (ms, ls, s) -> new StaminaPayload(new UUID(ms, ls), s)
     );
 
-    @Nonnull
+    @NotNull
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
 
-    public static void handleClient(StaminaPayload payload, IPayloadContext context) {
-        context.enqueueWork(() -> {
-            Player player = context.player().level().getPlayerByUUID(payload.playerID);
+    @Environment(EnvType.CLIENT)
+    public static void handleClient(StaminaPayload payload, ClientPlayNetworking.Context context) {
+        Level level = context.player().level();
+        context.client().execute(() -> {
+            Player player = level.getPlayerByUUID(payload.playerID);
             if (player == null || player.isLocalPlayer()) return;
-            player.setData(Attachments.STAMINA, payload.stamina);
+            player.setAttached(Attachments.STAMINA.get(), payload.stamina);
         });
     }
 
-    public static void handleServer(StaminaPayload payload, IPayloadContext context) {
-        context.enqueueWork(() -> {
+    public static void handleServer(StaminaPayload payload, ServerPlayNetworking.Context context) {
+        context.server().execute(() -> {
             Player player = context.player().level().getPlayerByUUID(payload.playerID);
             if (player == null) return;
-            PacketDistributor.sendToAllPlayers(payload);
-            player.setData(Attachments.STAMINA, payload.stamina);
+            PlayerLookup.all(context.server()).forEach(p -> ServerPlayNetworking.send(p, payload));
+            player.setAttached(Attachments.STAMINA.get(), payload.stamina);
         });
     }
 }

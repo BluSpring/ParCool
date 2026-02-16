@@ -11,7 +11,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class WoodenZiplineHookBlock extends ZiplineHookBlock {
     protected static final VoxelShape[] SHAPES = new VoxelShape[Direction.values().length];
@@ -45,7 +45,7 @@ public class WoodenZiplineHookBlock extends ZiplineHookBlock {
 
     private static final MapCodec<WoodenZiplineHookBlock> CODEC = simpleCodec(WoodenZiplineHookBlock::new);
 
-    @Nonnull
+    @NotNull
     @Override
     protected MapCodec<? extends DirectionalBlock> codec() {
         return CODEC;
@@ -55,9 +55,9 @@ public class WoodenZiplineHookBlock extends ZiplineHookBlock {
         super(p_i48440_1_);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public VoxelShape getShape(@Nonnull BlockState state, @Nonnull BlockGetter getter, @Nonnull BlockPos pos, @Nonnull CollisionContext context) {
+    public VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter getter, @NotNull BlockPos pos, @NotNull CollisionContext context) {
         return SHAPES[state.getValue(FACING).ordinal()];
     }
 }

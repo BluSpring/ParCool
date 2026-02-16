@@ -17,16 +17,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.config.NeoForgeServerConfig;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import javax.annotation.Nonnull;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
@@ -59,8 +56,8 @@ public abstract class LivingEntityMixin extends Entity {
 				return;
 			}
 			if (!parkourability.getActionInfo().can(ClimbPoles.class)
-					|| NeoForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStartEvent(player, parkourability.get(ClimbPoles.class))).isCanceled()
-					|| NeoForge.EVENT_BUS.post(new ParCoolActionEvent.TryToStart(player, parkourability.get(ClimbPoles.class))).isCanceled()
+					|| (new ParCoolActionEvent.TryToStartEvent(player, parkourability.get(ClimbPoles.class))).sendEvent().isCanceled()
+					|| (new ParCoolActionEvent.TryToStart(player, parkourability.get(ClimbPoles.class))).sendEvent().isCanceled()
 			) {
 				return;
 			}
@@ -81,12 +78,12 @@ public abstract class LivingEntityMixin extends Entity {
 	}
 
 	@Unique
-	public boolean parCool$isLivingOnCustomLadder(@Nonnull BlockState state, @Nonnull Level world, @Nonnull BlockPos pos, @Nonnull LivingEntity entity) {
+	public boolean parCool$isLivingOnCustomLadder(@NotNull BlockState state, @NotNull Level world, @NotNull BlockPos pos, @NotNull LivingEntity entity) {
 		boolean isSpectator = (entity instanceof Player && entity.isSpectator());
 		if (isSpectator) return false;
-		if (!NeoForgeServerConfig.INSTANCE.fullBoundingBoxLadders.get()) {
+		//if (!NeoForgeServerConfig.INSTANCE.fullBoundingBoxLadders.get()) {
 			return parCool$isCustomLadder(state, world, pos, entity);
-		} else {
+		/*} else {
 			AABB bb = entity.getBoundingBox();
 			int mX = Mth.floor(bb.minX);
 			int mY = Mth.floor(bb.minY);
@@ -106,7 +103,7 @@ public abstract class LivingEntityMixin extends Entity {
 				}
 			}
 			return false;
-		}
+		}*/
 	}
 
 	@Unique

@@ -6,16 +6,18 @@ import com.alrex.parcool.common.action.Action;
 import com.alrex.parcool.common.action.Actions;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import io.netty.buffer.ByteBuf;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +31,7 @@ public record ActionStatePayload(UUID playerID, List<Entry> states) implements C
             ActionStatePayload::decode
     );
 
-    @Nonnull
+    @NotNull
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
@@ -54,10 +56,11 @@ public record ActionStatePayload(UUID playerID, List<Entry> states) implements C
         return new ActionStatePayload(id, entries);
     }
 
-    public static void handleClient(ActionStatePayload payload, IPayloadContext context) {
-        context.enqueueWork(() -> {
+    @Environment(EnvType.CLIENT)
+    public static void handleClient(ActionStatePayload payload, ClientPlayNetworking.Context context) {
+        Level world = context.player().level();
+        context.client().execute(() -> {
             Player player;
-            Level world = context.player().level();
             player = world.getPlayerByUUID(payload.playerID());
             if (player == null || player.isLocalPlayer()) return;
 
@@ -68,16 +71,16 @@ public record ActionStatePayload(UUID playerID, List<Entry> states) implements C
                 switch (state.type()) {
                     case Start:
                         var buf = state.getDataAsBuffer();
-                        NeoForge.EVENT_BUS.post(new ParCoolActionEvent.Start.Pre(player, action));
+                        (new ParCoolActionEvent.Start.Pre(player, action)).sendEvent();
                         action.start(player, parkourability, buf);
-                        NeoForge.EVENT_BUS.post(new ParCoolActionEvent.StartEvent(player, action));
-                        NeoForge.EVENT_BUS.post(new ParCoolActionEvent.Start.Post(player, action));
+                        (new ParCoolActionEvent.StartEvent(player, action)).sendEvent();
+                        (new ParCoolActionEvent.Start.Post(player, action)).sendEvent();
                         break;
                     case Finish:
-                        NeoForge.EVENT_BUS.post(new ParCoolActionEvent.Finish.Pre(player, action));
+                        (new ParCoolActionEvent.Finish.Pre(player, action)).sendEvent();
                         action.finish(player);
-                        NeoForge.EVENT_BUS.post(new ParCoolActionEvent.StopEvent(player, action));
-                        NeoForge.EVENT_BUS.post(new ParCoolActionEvent.Finish.Post(player, action));
+                        (new ParCoolActionEvent.StopEvent(player, action)).sendEvent();
+                        (new ParCoolActionEvent.Finish.Post(player, action)).sendEvent();
                         break;
                     case Normal:
                         action.restoreSynchronizedState(state.getDataAsBuffer());
@@ -87,10 +90,10 @@ public record ActionStatePayload(UUID playerID, List<Entry> states) implements C
         });
     }
 
-    public static void handleServer(ActionStatePayload payload, IPayloadContext context) {
-        context.enqueueWork(() -> {
+    public static void handleServer(ActionStatePayload payload, ServerPlayNetworking.Context context) {
+        context.server().execute(() -> {
             Player player = context.player();
-            PacketDistributor.sendToAllPlayers(payload);
+            PlayerLookup.all(context.server()).forEach(p -> ServerPlayNetworking.send(p, payload));
 
             Parkourability parkourability = Parkourability.get(player);
 
@@ -99,16 +102,16 @@ public record ActionStatePayload(UUID playerID, List<Entry> states) implements C
                 switch (state.type()) {
                     case Start:
                         var buf = state.getDataAsBuffer();
-                        NeoForge.EVENT_BUS.post(new ParCoolActionEvent.Start.Pre(player, action));
+                        (new ParCoolActionEvent.Start.Pre(player, action)).sendEvent();
                         action.start(player, parkourability, buf);
-                        NeoForge.EVENT_BUS.post(new ParCoolActionEvent.StartEvent(player, action));
-                        NeoForge.EVENT_BUS.post(new ParCoolActionEvent.Start.Post(player, action));
+                        (new ParCoolActionEvent.StartEvent(player, action)).sendEvent();
+                        (new ParCoolActionEvent.Start.Post(player, action)).sendEvent();
                         break;
                     case Finish:
-                        NeoForge.EVENT_BUS.post(new ParCoolActionEvent.Finish.Pre(player, action));
+                        (new ParCoolActionEvent.Finish.Pre(player, action)).sendEvent();
                         action.finish(player);
-                        NeoForge.EVENT_BUS.post(new ParCoolActionEvent.StopEvent(player, action));
-                        NeoForge.EVENT_BUS.post(new ParCoolActionEvent.Finish.Post(player, action));
+                        (new ParCoolActionEvent.StopEvent(player, action)).sendEvent();
+                        (new ParCoolActionEvent.Finish.Post(player, action)).sendEvent();
                         break;
                     case Normal:
                         action.restoreSynchronizedState(state.getDataAsBuffer());

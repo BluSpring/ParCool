@@ -12,13 +12,13 @@ import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.alrex.parcool.utilities.VectorUtil;
 import com.alrex.parcool.utilities.WorldUtil;
+import net.fabricmc.fabric.mixin.client.keybinding.KeyBindingAccessor;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.event.RenderFrameEvent;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
 
 public class ClingToCliff extends Action {
@@ -46,13 +46,13 @@ public class ClingToCliff extends Action {
 		return facingDirection;
 	}
 
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean canStart(Player player, Parkourability parkourability, ByteBuffer startInfo) {
 		boolean value = (player.getDeltaMovement().y() < 0.2
 				&& !parkourability.get(HorizontalWallRun.class).isDoing()
 				&& KeyBindings.getKeyGrabWall().isDown()
-				&& (KeyBindings.getKeyGrabWall().getKey().equals(KeyBindings.getKeySneak().getKey()) || !player.isShiftKeyDown())
+				&& (((KeyBindingAccessor) KeyBindings.getKeyGrabWall()).fabric_getBoundKey().equals(((KeyBindingAccessor) KeyBindings.getKeySneak()).fabric_getBoundKey()) || !player.isShiftKeyDown())
 		);
 		if (!value) return false;
 		Vec3 wallVec = WorldUtil.getGrabbableWall(player);
@@ -63,7 +63,7 @@ public class ClingToCliff extends Action {
 		return 0.5 < wallVec.normalize().dot(player.getLookAngle().multiply(1, 0, 1).normalize());
 	}
 
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean canContinue(Player player, Parkourability parkourability) {
 		return (parkourability.getActionInfo().can(ClingToCliff.class)
@@ -87,13 +87,13 @@ public class ClingToCliff extends Action {
         armSwingAmount = 0;
     }
 
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	@Override
 	public void onStartInLocalClient(Player player, Parkourability parkourability, ByteBuffer startData) {
 		clingWallDirection = new Vec3(startData.getDouble(), 0, startData.getDouble());
 		facingDirection = FacingDirection.ToWall;
 		armSwingAmount = 0;
-		if (!KeyBindings.getKeyGrabWall().getKey().equals(KeyBindings.getKeySneak().getKey())) {
+		if (!((KeyBindingAccessor) KeyBindings.getKeyGrabWall()).fabric_getBoundKey().equals(((KeyBindingAccessor) KeyBindings.getKeySneak()).fabric_getBoundKey())) {
             parkourability.getBehaviorEnforcer().addMarkerCancellingSneak(ID_SNEAK_CANCEL, this::isDoing);
 		}
 		if (ParCoolConfig.Client.Booleans.EnableActionSounds.get())
@@ -113,7 +113,7 @@ public class ClingToCliff extends Action {
 		if (animation != null) animation.setAnimator(new ClingToCliffAnimator());
 	}
 
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	@Override
 	public void onWorkingTickInLocalClient(Player player, Parkourability parkourability) {
         armSwingAmount += (float) player.getDeltaMovement().multiply(1, 0, 1).lengthSqr();
@@ -161,9 +161,9 @@ public class ClingToCliff extends Action {
 		armSwingAmount = buffer.getFloat();
 	}
 
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	@Override
-	public void onRenderTick(RenderFrameEvent event, Player player, Parkourability parkourability) {
+	public void onRenderTick(Player player, Parkourability parkourability) {
 		if (isDoing() && clingWallDirection != null) {
 			switch (facingDirection) {
 				case ToWall:

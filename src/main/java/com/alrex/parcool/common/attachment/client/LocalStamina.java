@@ -7,12 +7,12 @@ import com.alrex.parcool.common.stamina.IParCoolStaminaHandler;
 import com.alrex.parcool.common.stamina.StaminaType;
 import com.alrex.parcool.common.stamina.handlers.InfiniteStaminaHandler;
 import net.minecraft.client.player.LocalPlayer;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class LocalStamina {
     @Nullable
     private StaminaType currentType = null;
@@ -20,7 +20,7 @@ public class LocalStamina {
     private IParCoolStaminaHandler handler = null;
 
     public static LocalStamina get(LocalPlayer player) {
-        return player.getData(ClientAttachments.LOCAL_STAMINA);
+        return player.getAttachedOrCreate(ClientAttachments.LOCAL_STAMINA.get());
     }
 
     public boolean isAvailable() {
@@ -34,7 +34,7 @@ public class LocalStamina {
     public void changeType(LocalPlayer player, StaminaType type) {
         currentType = type;
         handler = type.newHandler(player);
-        player.setData(Attachments.STAMINA, handler.initializeStamina(player, player.getData(Attachments.STAMINA)));
+        player.setAttached(Attachments.STAMINA.get(), handler.initializeStamina(player, player.getAttachedOrCreate(Attachments.STAMINA.get())));
     }
 
     @Nullable
@@ -43,15 +43,15 @@ public class LocalStamina {
     }
 
     public boolean isExhausted(LocalPlayer player) {
-        return player.getData(Attachments.STAMINA).isExhausted();
+        return player.getAttachedOrCreate(Attachments.STAMINA.get()).isExhausted();
     }
 
     public int getValue(LocalPlayer player) {
-        return player.getData(Attachments.STAMINA).value();
+        return player.getAttachedOrCreate(Attachments.STAMINA.get()).value();
     }
 
     public int getMax(LocalPlayer player) {
-        return player.getData(Attachments.STAMINA).max();
+        return player.getAttachedOrCreate(Attachments.STAMINA.get()).max();
     }
 
     public void consume(LocalPlayer player, int value) {
@@ -59,26 +59,26 @@ public class LocalStamina {
         if (handler == null) return;
         if (isInfinite(player)) return;
         if (player.hasEffect(Effects.INEXHAUSTIBLE)) return;
-        player.setData(
-                Attachments.STAMINA,
-                handler.consume(player, player.getData(Attachments.STAMINA), value)
+        player.setAttached(
+                Attachments.STAMINA.get(),
+                handler.consume(player, player.getAttachedOrCreate(Attachments.STAMINA.get()), value)
         );
     }
 
     public void recover(LocalPlayer player, int value) {
         if (player.isCreative() || player.isSpectator()) return;
         if (handler == null) return;
-        player.setData(
-                Attachments.STAMINA,
-                handler.recover(player, player.getData(Attachments.STAMINA), value)
+        player.setAttached(
+                Attachments.STAMINA.get(),
+                handler.recover(player, player.getAttachedOrCreate(Attachments.STAMINA.get()), value)
         );
     }
 
     public void onTick(LocalPlayer player) {
         if (handler == null) return;
-        player.setData(
-                Attachments.STAMINA,
-                handler.onTick(player, player.getData(Attachments.STAMINA))
+        player.setAttached(
+                Attachments.STAMINA.get(),
+                handler.onTick(player, player.getAttachedOrCreate(Attachments.STAMINA.get()))
         );
     }
 
@@ -89,12 +89,12 @@ public class LocalStamina {
 
     public boolean imposeExhaustionPenalty(LocalPlayer player) {
         if (handler == null) return false;
-        var current = player.getData(Attachments.STAMINA);
+        var current = player.getAttachedOrCreate(Attachments.STAMINA.get());
         return current.isExhausted() && handler.shouldImposeExhaustionPenalty(player, current);
     }
 
     public void sync(LocalPlayer player) {
-        player.getData(Attachments.STAMINA).sync(player);
+        player.getAttachedOrCreate(Attachments.STAMINA.get()).sync(player);
     }
 
     public boolean isUsingExternalStamina() {

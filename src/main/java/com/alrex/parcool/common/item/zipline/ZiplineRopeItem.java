@@ -23,8 +23,8 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.List;
@@ -59,9 +59,9 @@ public class ZiplineRopeItem extends Item {
         tooltipAdder.accept(Component.translatable("parcool.gui.text.zipline.tension", getZiplineType(stack).getTranslationName()).withStyle(ChatFormatting.GRAY));
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public InteractionResult useOn(@Nonnull UseOnContext context) {
+    public InteractionResult useOn(@NotNull UseOnContext context) {
         ItemStack stack = context.getItemInHand();
 
         // First Point is already registered
@@ -170,11 +170,11 @@ public class ZiplineRopeItem extends Item {
     }
 
     public static void setBlockPosition(ItemStack stack, BlockPos pos) {
-        stack.set(DataComponents.ZIPLINE_POSITION, new ZiplinePositionComponent(pos));
+        stack.set(DataComponents.ZIPLINE_POSITION.get(), new ZiplinePositionComponent(pos));
     }
 
     public static void removeBlockPosition(ItemStack stack) {
-        stack.remove(DataComponents.ZIPLINE_POSITION);
+        stack.remove(DataComponents.ZIPLINE_POSITION.get());
     }
 
     public static boolean hasBlockPosition(ItemStack stack) {
@@ -206,7 +206,7 @@ public class ZiplineRopeItem extends Item {
     }
 
     public static ZiplineType getZiplineType(ItemStack stack) {
-        var tensionComp = stack.get(DataComponents.ZIPLINE_TENSION);
+        var tensionComp = stack.get(DataComponents.ZIPLINE_TENSION.get());
         return tensionComp == null ? ZiplineType.STANDARD : tensionComp.type();
     }
 
@@ -216,6 +216,6 @@ public class ZiplineRopeItem extends Item {
     }
 
     public static void setZiplineType(ItemStack stack, ZiplineType type) {
-        stack.set(DataComponents.ZIPLINE_TENSION, new ZiplineTensionComponent(type));
+        stack.set(DataComponents.ZIPLINE_TENSION.get(), new ZiplineTensionComponent(type));
     }
 }

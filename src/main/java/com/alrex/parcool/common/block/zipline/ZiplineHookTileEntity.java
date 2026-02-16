@@ -23,8 +23,8 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -81,8 +81,7 @@ public class ZiplineHookTileEntity extends BlockEntity {
     }
 
     @Override
-    public void onChunkUnloaded() {
-        super.onChunkUnloaded();
+    public void setRemoved() {
         if (level != null) {
             getConnectionPoints().stream()
                     .filter(level::isLoaded)
@@ -95,6 +94,8 @@ public class ZiplineHookTileEntity extends BlockEntity {
             }
             connectionEntities.clear();
         }
+
+        super.setRemoved();
     }
 
     public Vec3 getActualZiplinePoint(@Nullable BlockPos connected) {
@@ -196,7 +197,7 @@ public class ZiplineHookTileEntity extends BlockEntity {
         restoreFrom(input);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         try (ProblemReporter.ScopedCollector collector = new ProblemReporter.ScopedCollector(this.problemPath(), ParCool.LOGGER)) {
@@ -204,12 +205,6 @@ public class ZiplineHookTileEntity extends BlockEntity {
             saveTo(nbt);
             return nbt.buildResult();
         }
-    }
-
-    @Override
-    public void handleUpdateTag(ValueInput input) {
-        super.handleUpdateTag(input);
-        restoreFrom(input);
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, BlockEntity entity) {

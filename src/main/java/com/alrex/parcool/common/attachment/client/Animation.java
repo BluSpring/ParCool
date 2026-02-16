@@ -7,6 +7,7 @@ import com.alrex.parcool.client.animation.Animator;
 import com.alrex.parcool.client.animation.PassiveCustomAnimation;
 import com.alrex.parcool.client.animation.PlayerModelRotator;
 import com.alrex.parcool.client.animation.PlayerModelTransformer;
+import com.alrex.parcool.client.fabric.CameraAngles;
 import com.alrex.parcool.common.attachment.ClientAttachments;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.config.ParCoolConfig;
@@ -14,17 +15,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.event.RenderFrameEvent;
-import net.neoforged.neoforge.client.event.ViewportEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class Animation {
 
 	public static Animation get(Player player) {
-		return player.getData(ClientAttachments.ANIMATION);
+		return player.getAttachedOrCreate(ClientAttachments.ANIMATION.get());
 	}
 
 	private Animator animator = null;
@@ -74,7 +72,7 @@ public class Animation {
 		animator.rotatePost(player, parkourability, rotator);
 	}
 
-    public void cameraSetup(ViewportEvent.ComputeCameraAngles event, LocalPlayer player, Parkourability parkourability) {
+    public void cameraSetup(CameraAngles event, LocalPlayer player, Parkourability parkourability) {
 		if (animator == null) return;
 		if (option.isCanceled(AnimationPart.CAMERA)) return;
 		if (animator.shouldRemoved(player, parkourability)) {
@@ -91,18 +89,18 @@ public class Animation {
 		}
 	}
 
-	public void onRenderTick(RenderFrameEvent event, Player player, Parkourability parkourability) {
+	public void onRenderTick(Player player, Parkourability parkourability) {
 		if (animator != null) {
-			animator.onRenderTick(event, player, parkourability);
+			animator.onRenderTick(player, parkourability);
 		}
-        if (event instanceof RenderFrameEvent.Pre){
+//        if (event instanceof RenderFrameEvent.Pre){
             updateAnimationInfo((AbstractClientPlayer) player);
-        }
+//        }
 	}
 
 	public void updateAnimationInfo(AbstractClientPlayer player) {
 		ParCoolAnimationInfoEvent animationEvent = new ParCoolAnimationInfoEvent(player, animator);
-		NeoForge.EVENT_BUS.post(animationEvent);
+		animationEvent.sendEvent();
 		option = animationEvent.getOption();
 	}
 

@@ -23,75 +23,71 @@ import com.alrex.parcool.extern.AdditionalMods;
 import com.alrex.parcool.server.command.CommandRegistry;
 import com.alrex.parcool.server.command.args.ParCoolArgumentTypeInfos;
 import com.alrex.parcool.server.limitation.Limitations;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModLoadingContext;
-import net.neoforged.fml.common.Mod;
+import com.mojang.brigadier.CommandDispatcher;
+import fuzs.forgeconfigapiport.fabric.api.v5.ConfigRegistry;
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
-import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mod(ParCool.MOD_ID)
-public class ParCool {
+public class ParCool implements ModInitializer {
 	public static final String MOD_ID = "parcool";
+
+	public static ResourceLocation id(String path) {
+		return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+	}
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(ParCool.class);
 
-	public ParCool(ModContainer container) {
-		IEventBus eventBus = ModLoadingContext.get().getActiveContainer().getEventBus();
-		assert eventBus != null;
-		EventBusForgeRegistry.register(NeoForge.EVENT_BUS);
-        if (FMLEnvironment.dist == Dist.CLIENT) {
-            EventBusForgeRegistry.registerClient(NeoForge.EVENT_BUS);
-            eventBus.addListener(KeyBindings::register);
-			eventBus.addListener(Renderers::register);
-			ClientAttachments.registerAll(eventBus);
-        }
-        eventBus.addListener(this::setup);
-		eventBus.addListener(this::loaded);
-		eventBus.register(AddAttributesHandler.class);
-		eventBus.register(NetworkRegistries.class);
-		eventBus.register(HUDRegistry.class);
+	@Override
+	public void onInitialize() {
+		EventBusForgeRegistry.register();
+		this.setup();
+//		eventBus.register(AddAttributesHandler.class); // DefaultAttributesMixin
+		NetworkRegistries.onRegisterPayload();
+//		eventBus.register(HUDRegistry.class); // ParCoolClient
 
-		Effects.registerAll(eventBus);
-		Potions.registerAll(eventBus);
-		Attributes.registerAll(eventBus);
-		SoundEvents.registerAll(eventBus);
-		Blocks.registerAll(eventBus);
-		Items.registerAll(eventBus);
-		CreativeTabs.registerAll(eventBus);
-		EntityTypes.registerAll(eventBus);
-		TileEntities.registerAll(eventBus);
-		DataComponents.registerAll(eventBus);
-		Attachments.registerAll(eventBus);
-		ParCoolArgumentTypeInfos.registerAll(eventBus);
+		Effects.registerAll();
+		Potions.registerAll();
+		Attributes.registerAll();
+		SoundEvents.registerAll();
+		Blocks.registerAll();
+		Items.registerAll();
+		CreativeTabs.registerAll();
+		EntityTypes.registerAll();
+		TileEntities.registerAll();
+		DataComponents.registerAll();
+		Attachments.registerAll();
+		ParCoolArgumentTypeInfos.registerAll();
 
-		NeoForge.EVENT_BUS.addListener(this::registerCommand);
-		NeoForge.EVENT_BUS.addListener(Limitations::init);
-		NeoForge.EVENT_BUS.addListener(Limitations::save);
+		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> registerCommand(dispatcher));
 
-		container.registerConfig(ModConfig.Type.SERVER, ParCoolConfig.Server.getConfigSpec());
-		container.registerConfig(ModConfig.Type.CLIENT, ParCoolConfig.Client.getConfigSpec());
+		ServerLifecycleEvents.SERVER_STARTING.register(Limitations::init);
+		ServerLifecycleEvents.SERVER_STOPPING.register(Limitations::save);
+
+		ConfigRegistry.INSTANCE.register(MOD_ID, ModConfig.Type.SERVER, ParCoolConfig.Server.getConfigSpec());
+		ConfigRegistry.INSTANCE.register(MOD_ID, ModConfig.Type.CLIENT, ParCoolConfig.Client.getConfigSpec());
+
+		this.loaded();
 	}
 
-	private void loaded(FMLLoadCompleteEvent event) {
+	private void loaded() {
 		AdditionalMods.init();
-		switch (FMLEnvironment.dist) {
+		switch (FabricLoader.getInstance().getEnvironmentType()) {
 			case CLIENT -> AdditionalMods.initInClient();
-			case DEDICATED_SERVER -> AdditionalMods.initInDedicatedServer();
+			case SERVER -> AdditionalMods.initInDedicatedServer();
 		}
 	}
 
-	private void setup(final FMLCommonSetupEvent event) {
+	private void setup() {
 	}
 
-	private void registerCommand(final RegisterCommandsEvent event) {
-		CommandRegistry.register(event.getDispatcher());
+	private void registerCommand(final CommandDispatcher<CommandSourceStack> dispatcher) {
+		CommandRegistry.register(dispatcher);
 	}
 }

@@ -3,28 +3,28 @@ package com.alrex.parcool.common.attachment;
 import com.alrex.parcool.ParCool;
 import com.alrex.parcool.common.attachment.client.Animation;
 import com.alrex.parcool.common.attachment.client.LocalStamina;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 
 import java.util.function.Supplier;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class ClientAttachments {
-    private static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, ParCool.MOD_ID + ".client");
-    public static final Supplier<AttachmentType<LocalStamina>> LOCAL_STAMINA = ATTACHMENT_TYPES.register(
-            "local_stamina",
-            () -> AttachmentType.builder(LocalStamina::new).build()
-    );
-    public static final Supplier<AttachmentType<Animation>> ANIMATION = ATTACHMENT_TYPES.register(
-            "animation",
-            () -> AttachmentType.builder(Animation::new).build()
-    );
+    public static final Supplier<AttachmentType<LocalStamina>> LOCAL_STAMINA = register(AttachmentRegistry.create(
+            ParCool.id("local_stamina"),
+            (builder) -> builder.initializer(LocalStamina::new)
+    ));
+    public static final Supplier<AttachmentType<Animation>> ANIMATION = register(AttachmentRegistry.create(
+            ParCool.id("animation"),
+            (builder) -> builder.initializer(Animation::new)
+    ));
 
-    public static void registerAll(IEventBus bus) {
-        ATTACHMENT_TYPES.register(bus);
+    private static <A> Supplier<AttachmentType<A>> register(AttachmentType<A> type) {
+        return () -> type;
+    }
+
+    public static void registerAll() {
     }
 }

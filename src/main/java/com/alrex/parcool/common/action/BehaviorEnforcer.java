@@ -1,8 +1,8 @@
 package com.alrex.parcool.common.action;
 
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.Supplier;

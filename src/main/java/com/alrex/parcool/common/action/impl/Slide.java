@@ -9,6 +9,7 @@ import com.alrex.parcool.common.action.BehaviorEnforcer;
 import com.alrex.parcool.common.action.StaminaConsumeTiming;
 import com.alrex.parcool.common.attachment.client.Animation;
 import com.alrex.parcool.common.attachment.common.Parkourability;
+import com.alrex.parcool.common.fabric.ForcedPoseEntity;
 import com.alrex.parcool.config.ParCoolConfig;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -19,10 +20,10 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.nio.ByteBuffer;
 
 public class Slide extends Action {
@@ -120,7 +121,7 @@ public class Slide extends Action {
 		return StaminaConsumeTiming.None;
 	}
 
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	private void spawnSlidingParticle(Player player) {
 		if (!ParCoolConfig.Client.Booleans.EnableActionParticles.get()) return;
 		var level = player.level();
@@ -157,13 +158,13 @@ public class Slide extends Action {
 	@Override
 	public void onWorkingTick(Player player, Parkourability parkourability) {
 		player.setSprinting(false);
-		if (player.getForcedPose() != Pose.SWIMMING) {
-			player.setForcedPose(Pose.SWIMMING);
+		if (((ForcedPoseEntity) player).parcool$getForcedPose() != Pose.SWIMMING) {
+			((ForcedPoseEntity) player).parcool$setForcedPose(Pose.SWIMMING);
 		}
 	}
 
 	@Override
 	public void onStop(Player player) {
-		player.setForcedPose(null);
+		((ForcedPoseEntity) player).parcool$setForcedPose(null);
 	}
 }

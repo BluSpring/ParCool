@@ -12,7 +12,7 @@
 //import net.neoforged.neoforge.network.PacketDistributor;
 //import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 //
-//import javax.annotation.Nullable;
+//import org.jetbrains.annotations.Nullable;
 //
 //public class EpicFightStaminaHandler implements IParCoolStaminaHandler {
 //    private float consumed = 0;
@@ -32,20 +32,20 @@
 //    }
 //
 //    @Override
-//    @OnlyIn(Dist.CLIENT)
+//    @Environment(EnvType.CLIENT)
 //    public ReadonlyStamina initializeStamina(LocalPlayer player, ReadonlyStamina current) {
 //        return readCurrentStamina(player, current);
 //    }
 //
 //    @Override
-//    @OnlyIn(Dist.CLIENT)
+//    @Environment(EnvType.CLIENT)
 //    public ReadonlyStamina consume(LocalPlayer player, ReadonlyStamina current, int value) {
 //        consumed += value / 60f;
 //        return current;
 //    }
 //
 //    @Override
-//    @OnlyIn(Dist.CLIENT)
+//    @Environment(EnvType.CLIENT)
 //    public ReadonlyStamina recover(LocalPlayer player, ReadonlyStamina current, int value) {
 //        consumed -= value / 60f;
 //        return current;

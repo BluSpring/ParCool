@@ -9,7 +9,6 @@ import com.alrex.parcool.utilities.VectorUtil;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.event.RenderFrameEvent;
 
 import java.nio.ByteBuffer;
 
@@ -48,7 +47,7 @@ public class SkyDive extends Action {
 	}
 
 	@Override
-    public void onRenderTick(RenderFrameEvent event, Player player, Parkourability parkourability) {
+    public void onRenderTick(Player player, Parkourability parkourability) {
 		if (isDoing()) player.setYBodyRot(player.yHeadRot);
 	}
 

@@ -1,33 +1,36 @@
 package com.alrex.parcool.common.potion;
 
 
+import net.fabricmc.fabric.api.registry.FabricBrewingRecipeRegistryBuilder;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.alchemy.Potions;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
 
 public class ParCoolBrewingRecipe {
-    @SubscribeEvent
-    public static void onRegister(RegisterBrewingRecipesEvent event) {
-        event.getBuilder()
+    public static void init() {
+        FabricBrewingRecipeRegistryBuilder.BUILD.register(ParCoolBrewingRecipe::onRegister);
+    }
+
+    public static void onRegister(PotionBrewing.Builder builder) {
+        builder
                 .addMix(
                         Potions.AWKWARD,
                         Items.POISONOUS_POTATO,
                         com.alrex.parcool.common.potion.Potions.POOR_ENERGY_DRINK
                 );
-        event.getBuilder()
+        builder
                 .addMix(
                         Potions.AWKWARD,
                         Items.CHICKEN,
                         com.alrex.parcool.common.potion.Potions.POOR_ENERGY_DRINK
                 );
-        event.getBuilder()
+        builder
                 .addMix(
                         Potions.AWKWARD,
                         Items.QUARTZ,
                         com.alrex.parcool.common.potion.Potions.ENERGY_DRINK
                 );
-        event.getBuilder()
+        builder
                 .addMix(
                         com.alrex.parcool.common.potion.Potions.POOR_ENERGY_DRINK,
                         Items.QUARTZ,

@@ -1,15 +1,15 @@
 package com.alrex.parcool.api;
 
 import com.alrex.parcool.ParCool;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.function.Supplier;
 
 public class SoundEvents {
-    private static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(Registries.SOUND_EVENT, ParCool.MOD_ID);
     private static final SoundEvent VAULT_SOUND = SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(ParCool.MOD_ID, "action.vault"));
     private static final SoundEvent VERTICAL_WALL_RUN_SOUND = SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(ParCool.MOD_ID, "action.v_wall_run"));
     private static final SoundEvent HORIZONTAL_WALL_RUN_SOUND = SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(ParCool.MOD_ID, "action.h_wall_run"));
@@ -30,27 +30,31 @@ public class SoundEvents {
     private static final SoundEvent ZIPLINE_SET_SOUND = SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(ParCool.MOD_ID, "zipline.set"));
     private static final SoundEvent ZIPLINE_REMOVE_SOUND = SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(ParCool.MOD_ID, "zipline.remove"));
 
-    public static final DeferredHolder<SoundEvent, SoundEvent> VAULT = SOUNDS.register("action.vault", () -> VAULT_SOUND);
-    public static final DeferredHolder<SoundEvent, SoundEvent> VERTICAL_WALL_RUN = SOUNDS.register("action.v_wall_run", () -> VERTICAL_WALL_RUN_SOUND);
-    public static final DeferredHolder<SoundEvent, SoundEvent> HORIZONTAL_WALL_RUN = SOUNDS.register("action.h_wall_run", () -> HORIZONTAL_WALL_RUN_SOUND);
-    public static final DeferredHolder<SoundEvent, SoundEvent> BREAKFALL_JUST_TIME = SOUNDS.register("action.breakfall.just", () -> BREAKFALL_JUST_TIME_SOUND);
-    public static final DeferredHolder<SoundEvent, SoundEvent> ROLL = SOUNDS.register("action.breakfall.roll", () -> ROLL_SOUND);
-    public static final DeferredHolder<SoundEvent, SoundEvent> SAFETY_TAP = SOUNDS.register("action.breakfall.tap", () -> SAFETY_TAP_SOUND);
-    public static final DeferredHolder<SoundEvent, SoundEvent> CATLEAP = SOUNDS.register("action.catleap", () -> CATLEAP_SOUND);
-    public static final DeferredHolder<SoundEvent, SoundEvent> CHARGE_JUMP = SOUNDS.register("action.charge_jump", () -> CHARGE_JUMP_SOUND);
-    public static final DeferredHolder<SoundEvent, SoundEvent> WALL_JUMP = SOUNDS.register("action.wall_jump", () -> WALL_JUMP_SOUND);
-    public static final DeferredHolder<SoundEvent, SoundEvent> CLING_TO_CLIFF = SOUNDS.register("action.cling_to_cliff.grab", () -> CLING_TO_CLIFF_SOUND);
-    public static final DeferredHolder<SoundEvent, SoundEvent> CLING_TO_CLIFF_JUMP = SOUNDS.register("action.cling_to_cliff.jump", () -> CLING_TO_CLIFF_JUMP_SOUND);
-    public static final DeferredHolder<SoundEvent, SoundEvent> HANG_DOWN = SOUNDS.register("action.hang_down.grab", () -> HANG_DOWN_SOUND);
-    public static final DeferredHolder<SoundEvent, SoundEvent> HANG_DOWN_JUMP = SOUNDS.register("hang_down.jump", () -> HANG_DOWN_JUMP_SOUND);
-    public static final DeferredHolder<SoundEvent, SoundEvent> SLIDE = SOUNDS.register("action.slide", () -> SLIDE_SOUND);
-    public static final DeferredHolder<SoundEvent, SoundEvent> DODGE = SOUNDS.register("action.dodge", () -> DODGE_SOUND);
-    public static final DeferredHolder<SoundEvent, SoundEvent> PARCOOL_ENABLE = SOUNDS.register("action.enable", () -> PARCOOL_ENABLE_SOUND);
-    public static final DeferredHolder<SoundEvent, SoundEvent> PARCOOL_DISABLE = SOUNDS.register("action.disable", () -> PARCOOL_DISABLE_SOUND);
-    public static final DeferredHolder<SoundEvent, SoundEvent> ZIPLINE_SET = SOUNDS.register("zipline.set", () -> ZIPLINE_SET_SOUND);
-    public static final DeferredHolder<SoundEvent, SoundEvent> ZIPLINE_REMOVE = SOUNDS.register("zipline.remove", () -> ZIPLINE_REMOVE_SOUND);
+    public static final Supplier<SoundEvent> VAULT = register("action.vault", () -> VAULT_SOUND);
+    public static final Supplier<SoundEvent> VERTICAL_WALL_RUN = register("action.v_wall_run", () -> VERTICAL_WALL_RUN_SOUND);
+    public static final Supplier<SoundEvent> HORIZONTAL_WALL_RUN = register("action.h_wall_run", () -> HORIZONTAL_WALL_RUN_SOUND);
+    public static final Supplier<SoundEvent> BREAKFALL_JUST_TIME = register("action.breakfall.just", () -> BREAKFALL_JUST_TIME_SOUND);
+    public static final Supplier<SoundEvent> ROLL = register("action.breakfall.roll", () -> ROLL_SOUND);
+    public static final Supplier<SoundEvent> SAFETY_TAP = register("action.breakfall.tap", () -> SAFETY_TAP_SOUND);
+    public static final Supplier<SoundEvent> CATLEAP = register("action.catleap", () -> CATLEAP_SOUND);
+    public static final Supplier<SoundEvent> CHARGE_JUMP = register("action.charge_jump", () -> CHARGE_JUMP_SOUND);
+    public static final Supplier<SoundEvent> WALL_JUMP = register("action.wall_jump", () -> WALL_JUMP_SOUND);
+    public static final Supplier<SoundEvent> CLING_TO_CLIFF = register("action.cling_to_cliff.grab", () -> CLING_TO_CLIFF_SOUND);
+    public static final Supplier<SoundEvent> CLING_TO_CLIFF_JUMP = register("action.cling_to_cliff.jump", () -> CLING_TO_CLIFF_JUMP_SOUND);
+    public static final Supplier<SoundEvent> HANG_DOWN = register("action.hang_down.grab", () -> HANG_DOWN_SOUND);
+    public static final Supplier<SoundEvent> HANG_DOWN_JUMP = register("hang_down.jump", () -> HANG_DOWN_JUMP_SOUND);
+    public static final Supplier<SoundEvent> SLIDE = register("action.slide", () -> SLIDE_SOUND);
+    public static final Supplier<SoundEvent> DODGE = register("action.dodge", () -> DODGE_SOUND);
+    public static final Supplier<SoundEvent> PARCOOL_ENABLE = register("action.enable", () -> PARCOOL_ENABLE_SOUND);
+    public static final Supplier<SoundEvent> PARCOOL_DISABLE = register("action.disable", () -> PARCOOL_DISABLE_SOUND);
+    public static final Supplier<SoundEvent> ZIPLINE_SET = register("zipline.set", () -> ZIPLINE_SET_SOUND);
+    public static final Supplier<SoundEvent> ZIPLINE_REMOVE = register("zipline.remove", () -> ZIPLINE_REMOVE_SOUND);
 
-    public static void registerAll(IEventBus modBus) {
-        SOUNDS.register(modBus);
+    private static Supplier<SoundEvent> register(String name, Supplier<SoundEvent> soundSupplier) {
+        var soundEvent = Registry.register(BuiltInRegistries.SOUND_EVENT, ParCool.id(name), soundSupplier.get());
+        return () -> soundEvent;
+    }
+
+    public static void registerAll() {
     }
 }

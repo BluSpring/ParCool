@@ -5,9 +5,9 @@ import com.alrex.parcool.common.action.Action;
 import com.alrex.parcool.common.action.StaminaConsumeTiming;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.utilities.VectorUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.event.RenderFrameEvent;
 
 import java.nio.ByteBuffer;
 
@@ -47,9 +47,9 @@ public class QuickTurn extends Action {
 	}
 
 	@Override
-    public void onRenderTick(RenderFrameEvent event, Player player, Parkourability parkourability) {
+    public void onRenderTick(Player player, Parkourability parkourability) {
 		if (isDoing() && startAngle != null) {
-            float renderTick = getDoingTick() + event.getPartialTick().getGameTimeDeltaPartialTick(true);
+            float renderTick = getDoingTick() + Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true);
 			float animationPhase = renderTick / AnimationTickLength;
 			Vec3 rotatedAngle = startAngle.yRot((float) (Math.PI * animationPhase * (turnRightward ? -1 : 1)));
 			player.setYRot((float) VectorUtil.toYawDegree(rotatedAngle));

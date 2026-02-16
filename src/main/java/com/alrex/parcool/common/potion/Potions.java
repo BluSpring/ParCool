@@ -1,18 +1,19 @@
 package com.alrex.parcool.common.potion;
 
 import com.alrex.parcool.ParCool;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.alchemy.Potion;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.function.Supplier;
 
 public class Potions {
-    private static final DeferredRegister<Potion> POTIONS = DeferredRegister.create(Registries.POTION, ParCool.MOD_ID);
-    public static final DeferredHolder<Potion, Potion> POOR_ENERGY_DRINK =
-			POTIONS.register(
+    public static final Holder<Potion> POOR_ENERGY_DRINK =
+			register(
 					"poor_energy_drink",
 					() -> new Potion(
 							"poor_energy_drink",
@@ -21,8 +22,8 @@ public class Potions {
 							new MobEffectInstance(MobEffects.POISON, 100)
 					)
 			);
-    public static final DeferredHolder<Potion, Potion> ENERGY_DRINK =
-			POTIONS.register(
+    public static final Holder<Potion> ENERGY_DRINK =
+			register(
 					"energy_drink",
 					() -> new Potion(
 							"energy_drink",
@@ -30,7 +31,10 @@ public class Potions {
 					)
 			);
 
-	public static void registerAll(IEventBus modBus) {
-		POTIONS.register(modBus);
+	private static Holder<Potion> register(String name, Supplier<Potion> potionSupplier) {
+		return Registry.registerForHolder(BuiltInRegistries.POTION, ParCool.id(name), potionSupplier.get());
+	}
+
+	public static void registerAll() {
 	}
 }

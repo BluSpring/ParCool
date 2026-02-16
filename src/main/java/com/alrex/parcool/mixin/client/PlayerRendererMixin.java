@@ -48,7 +48,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         var entity = level.getEntity(renderState.id);
         if (!(entity instanceof AbstractClientPlayer player)) return;
         Animation animation = Animation.get(player);
-        parCool$rotator = new PlayerModelRotator(poseStack, player, renderState, renderState.partialTick, renderState.bodyRot);
+        parCool$rotator = new PlayerModelRotator(poseStack, player, renderState, Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true), renderState.bodyRot);
         if (animation.rotatePre(player, parCool$rotator)) {
             parCool$rotator = null;
             ci.cancel();

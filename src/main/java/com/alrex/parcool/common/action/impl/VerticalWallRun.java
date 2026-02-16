@@ -19,9 +19,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.event.RenderFrameEvent;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 import java.nio.ByteBuffer;
 
@@ -66,7 +65,7 @@ public class VerticalWallRun extends Action {
 							Mth.floor(player.getZ() + wall.z())
 					);
 					if (!player.level().isLoaded(targetBlock)) return false;
-					float slipperiness = player.level().getBlockState(targetBlock).getFriction(player.level(), targetBlock, player);
+					float slipperiness = player.level().getBlockState(targetBlock).getBlock().getFriction();
 					startInfo.putDouble(height);
 					startInfo.putFloat(slipperiness);
 					startInfo.putDouble(wall.x());
@@ -116,7 +115,7 @@ public class VerticalWallRun extends Action {
 	}
 
 	@Override
-    public void onRenderTick(RenderFrameEvent event, Player player, Parkourability parkourability) {
+    public void onRenderTick(Player player, Parkourability parkourability) {
 		if (wallDirection != null && isDoing()) {
 			player.setYHeadRot((float) VectorUtil.toYawDegree(wallDirection));
             player.yBodyRotO = player.yBodyRot = player.getYHeadRot();
@@ -133,7 +132,7 @@ public class VerticalWallRun extends Action {
 		return StaminaConsumeTiming.OnStart;
 	}
 
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	public void spawnRunningParticle(Player player) {
 		if (!ParCoolConfig.Client.Booleans.EnableActionParticles.get()) return;
 		if (wallDirection == null) return;

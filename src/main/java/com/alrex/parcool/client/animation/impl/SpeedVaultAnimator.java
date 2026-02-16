@@ -3,6 +3,7 @@ package com.alrex.parcool.client.animation.impl;
 import com.alrex.parcool.client.animation.Animator;
 import com.alrex.parcool.client.animation.PlayerModelRotator;
 import com.alrex.parcool.client.animation.PlayerModelTransformer;
+import com.alrex.parcool.client.fabric.CameraAngles;
 import com.alrex.parcool.common.action.impl.Vault;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.config.ParCoolConfig;
@@ -10,7 +11,6 @@ import com.alrex.parcool.utilities.Easing;
 import com.alrex.parcool.utilities.EasingFunctions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.client.event.ViewportEvent;
 
 import static com.alrex.parcool.utilities.MathUtil.lerp;
 
@@ -107,7 +107,7 @@ public class SpeedVaultAnimator extends Animator {
 	}
 
 	@Override
-	public void onCameraSetUp(ViewportEvent.ComputeCameraAngles event, Player clientPlayer, Parkourability parkourability) {
+	public void onCameraSetUp(CameraAngles event, Player clientPlayer, Parkourability parkourability) {
 		if (!Minecraft.getInstance().options.getCameraType().isFirstPerson() ||
 				!ParCoolConfig.Client.Booleans.EnableCameraAnimationOfVault.get()) return;
 		float factor = getFactor((float) (getTick() + event.getPartialTick()));
