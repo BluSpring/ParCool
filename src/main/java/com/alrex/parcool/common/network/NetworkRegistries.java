@@ -16,6 +16,7 @@ public class NetworkRegistries {
         PayloadTypeRegistry.playC2S().register(StaminaPayload.TYPE, StaminaPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(StaminaProcessOnServerPayload.TYPE, StaminaProcessOnServerPayload.CODEC);
 
+        PayloadTypeRegistry.playS2C().register(StartBreakfallEventPayload.TYPE, StartBreakfallEventPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(ActionStatePayload.TYPE, ActionStatePayload.CODEC);
         PayloadTypeRegistry.playS2C().register(LimitationPayload.TYPE, LimitationPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(ClientInformationPayload.TYPE, ClientInformationPayload.CODEC);
